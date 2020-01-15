@@ -31,6 +31,7 @@
 
  Wait for my code review.
  */
+#include <iostream>
 
 struct FloatType
 {
@@ -57,76 +58,90 @@ float FloatType::multiply( float lhs, float rhs )
 
 float FloatType::divide( float lhs, float rhs )
 {
-    return lhs / rhs;
+    if (rhs == 0.0f)
+    {
+        std::cout<<"error divide by zero"<<std::endl;
+        return 0.0f;
+    }
+    else
+    {
+        return lhs/rhs;
+    };
 }
- struct DoubleType 
- {
+
+struct DoubleType 
+{
     double add( double lhs, double rhs );
     double subtract( double lhs, double rhs );
     double multiply( double lhs, double rhs );
     double divide( double lhs, double rhs );
- };
+};
 
- double DoubleType::add(double lhs, double rhs)
- {
-     return lhs + rhs;
- }
- 
- double DoubleType::subtract(double lhs, double rhs)
- {
-     return lhs - rhs;
- }
+double DoubleType::add(double lhs, double rhs)
+{
+    return lhs + rhs;
+}
+
+double DoubleType::subtract(double lhs, double rhs)
+{
+    return lhs - rhs;
+}
 
 double DoubleType::divide(double lhs, double rhs)
- {
-     return lhs / rhs;
- }
+{
+    if (rhs == 0.0)
+    {
+        std::cout << "error divide by zero"<<std::endl;
+        return 0.0;
+    }
+    else
+    {
+        return lhs/rhs;
+    };
+}
 
 double DoubleType::multiply(double lhs, double rhs)
- {
-     return lhs * rhs;
- }
- 
+{
+    return lhs * rhs;
+}
 
- struct IntType
- {
+
+struct IntType
+{
     int add( int lhs, int rhs );
     int subtract( int lhs, int rhs );
     int multiply( int lhs, int rhs );
     int divide( int lhs, int rhs );
- };
+};
 
- int IntType::add(int lhs, int rhs)
- {
-     return lhs+rhs;
- }
+int IntType::add(int lhs, int rhs)
+{
+    return lhs+rhs;
+}
 
- int IntType::subtract(int lhs, int rhs)
- {
-     return lhs-rhs;
- }
+int IntType::subtract(int lhs, int rhs)
+{
+    return lhs-rhs;
+}
 
- int IntType::multiply(int lhs, int rhs)
- {
-     return lhs*rhs;
- }
- 
- int IntType::divide(int lhs, int rhs)
- {
-     int result;
-     if (rhs == 0)
-     {
-         result = 0;
-     }
-     else
-     {
-         result = lhs/rhs;
-     };
+int IntType::multiply(int lhs, int rhs)
+{
+    return lhs*rhs;
+}
 
-     return result;
- }
+int IntType::divide(int lhs, int rhs)
+{
+    if (rhs == 0)
+    {
+        std::cout<<"error divide by zero"<<std::endl;
+        return 0;
+    }
+    else
+    {
+        return lhs/rhs;
+    };
+}
 
-#include <iostream>
 int main()
 {
     FloatType f;
