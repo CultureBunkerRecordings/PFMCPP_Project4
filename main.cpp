@@ -58,11 +58,6 @@ float FloatType::multiply( float lhs, float rhs )
 
 float FloatType::divide( float lhs, float rhs )
 {
-    if (rhs == 0.0f)
-    {
-        std::cout<<"error divide by zero"<<std::endl;
-        return 0.0f; FIXME: Floating point division by zero is not an error ;-)  Integer division by 0 is.
-    }
     return lhs/rhs;
 }
 
@@ -86,11 +81,6 @@ double DoubleType::subtract(double lhs, double rhs)
 
 double DoubleType::divide(double lhs, double rhs)
 {
-    if (rhs == 0.0)
-    {
-        std::cout << "error divide by zero"<<std::endl;
-        return 0.0; FIXME: Floating point division by zero is not an error ;-)  Integer division by 0 is.
-    }
     return lhs/rhs;
 }
 
