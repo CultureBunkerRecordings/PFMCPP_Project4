@@ -63,10 +63,7 @@ float FloatType::divide( float lhs, float rhs )
         std::cout<<"error divide by zero"<<std::endl;
         return 0.0f;
     }
-    else FIXME: Think about what happens if rhs == 0.  does the function continue executing? Do you need this 'else' block?  Or can you just return lhs/rhs if rhs is not 0?
-    {
-        return lhs/rhs;
-    }; FIXME this is not a UDT.  no need for a semicolon here
+    return lhs/rhs;
 }
 
 struct DoubleType 
@@ -94,10 +91,7 @@ double DoubleType::divide(double lhs, double rhs)
         std::cout << "error divide by zero"<<std::endl;
         return 0.0;
     }
-    else FIXME: Think about what happens if rhs == 0.  does the function continue executing? Do you need this 'else' block?  Or can you just return lhs/rhs if rhs is not 0?
-    {
-        return lhs/rhs;
-    }; FIXME this is not a UDT.  no need for a semicolon here
+    return lhs/rhs;
 }
 
 double DoubleType::multiply(double lhs, double rhs)
@@ -136,10 +130,7 @@ int IntType::divide(int lhs, int rhs)
         std::cout<<"error divide by zero"<<std::endl;
         return 0;
     }
-    else FIXME: Think about what happens if rhs == 0.  does the function continue executing? Do you need this 'else' block?  Or can you just return lhs/rhs if rhs is not 0?
-    {
-        return lhs/rhs;
-    }; FIXME this is not a UDT.  no need for a semicolon here
+    return lhs/rhs;
 }
 
 int main()
