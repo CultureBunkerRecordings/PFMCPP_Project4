@@ -49,8 +49,16 @@ float FloatType::subtract( float lhs, float rhs )
 {
     return lhs - rhs;
 }
-FIXME implement the remaining FloatType member functions
- 
+
+float FloatType::multiply( float lhs, float rhs )
+{
+    return lhs * rhs;
+}
+
+float FloatType::divide( float lhs, float rhs )
+{
+    return lhs / rhs;
+}
  struct DoubleType 
  {
     double add( double lhs, double rhs );
@@ -59,9 +67,9 @@ FIXME implement the remaining FloatType member functions
     double divide( double lhs, double rhs );
  };
 
- double DoubleType::multiply(double lhs, double rhs)
+ double DoubleType::add(double lhs, double rhs)
  {
-     return lhs * rhs;
+     return lhs + rhs;
  }
  
  double DoubleType::subtract(double lhs, double rhs)
@@ -69,7 +77,16 @@ FIXME implement the remaining FloatType member functions
      return lhs - rhs;
  }
 
- FIXME implement the remaining DoubleType member functions
+double DoubleType::divide(double lhs, double rhs)
+ {
+     return lhs / rhs;
+ }
+
+double DoubleType::multiply(double lhs, double rhs)
+ {
+     return lhs * rhs;
+ }
+ 
 
  struct IntType
  {
@@ -79,12 +96,35 @@ FIXME implement the remaining FloatType member functions
     int divide( int lhs, int rhs );
  };
 
- int IntType::divide(int lhs, int rhs)
+ int IntType::add(int lhs, int rhs)
  {
-     return lhs/rhs; FIXME integer divide-by-0 crashes programs. handle the scenario when a 0 is passed in as the rhs argument
+     return lhs+rhs;
  }
 
- FIXME implement the remaining IntType member functions
+ int IntType::subtract(int lhs, int rhs)
+ {
+     return lhs-rhs;
+ }
+
+ int IntType::multiply(int lhs, int rhs)
+ {
+     return lhs*rhs;
+ }
+ 
+ int IntType::divide(int lhs, int rhs)
+ {
+     int result;
+     if (rhs == 0)
+     {
+         result = 0;
+     }
+     else
+     {
+         result = lhs/rhs;
+     };
+
+     return result;
+ }
 
 #include <iostream>
 int main()
