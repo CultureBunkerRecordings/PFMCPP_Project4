@@ -49,6 +49,7 @@ float FloatType::subtract( float lhs, float rhs )
 {
     return lhs - rhs;
 }
+FIXME implement the remaining FloatType member functions
  
  struct DoubleType 
  {
@@ -68,6 +69,8 @@ float FloatType::subtract( float lhs, float rhs )
      return lhs - rhs;
  }
 
+ FIXME implement the remaining DoubleType member functions
+
  struct IntType
  {
     int add( int lhs, int rhs );
@@ -78,8 +81,10 @@ float FloatType::subtract( float lhs, float rhs )
 
  int IntType::divide(int lhs, int rhs)
  {
-     return lhs/rhs;
+     return lhs/rhs; FIXME integer divide-by-0 crashes programs. handle the scenario when a 0 is passed in as the rhs argument
  }
+
+ FIXME implement the remaining IntType member functions
 
 #include <iostream>
 int main()
