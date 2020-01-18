@@ -117,7 +117,7 @@ int IntType::divide(int lhs, int rhs)
 {
     if (rhs == 0)
     {
-        std::cout<<"error divide by zero"<<std::endl;
+        std::cout << "error divide by zero" << std::endl;
         return 0;
     }
     return lhs/rhs;
@@ -128,7 +128,7 @@ int main()
     FloatType f;
     IntType i;
     DoubleType d;
-    
+
     auto addF = f.add(2.5f, 6.5f);
     auto subF = f.subtract(2.5f, 6.5f);
     auto divI = i.divide(8, 2);
