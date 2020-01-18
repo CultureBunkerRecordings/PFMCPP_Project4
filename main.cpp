@@ -128,17 +128,18 @@ int main()
     FloatType f;
     IntType i;
     DoubleType d;
+    
     auto addF = f.add(2.5f, 6.5f);
     auto subF = f.subtract(2.5f, 6.5f);
     auto divI = i.divide(8, 2);
     auto multiD = d.multiply(4.4567, 3.7899765);
     auto subD = d.subtract(45.6784, 20.7895);
 
-    std::cout<< "result of f.add(): "<<addF<<std::endl;
-    std::cout<< "result of f.subtract(): "<<subF<<std::endl;
-    std::cout<< "result of i.divide(): "<<divI<<std::endl;
-    std::cout<< "result of d.multiply(): "<<multiD<<std::endl;
-    std::cout<< "result of d.subtract(): "<<subD<<std::endl;
+    std::cout << "result of f.add(): " << addF << std::endl; 
+	std::cout << "result of f.subtract(): " << subF << std::endl;
+    std::cout << "result of i.divide(): " << divI << std::endl;
+    std::cout << "result of d.multiply(): " << multiD << std::endl;
+    std::cout << "result of d.subtract(): "<< subD << std::endl;
 
     std::cout << "good to go!" << std::endl;
 }
