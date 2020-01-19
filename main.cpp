@@ -21,18 +21,15 @@ struct HeapA
     HeapA();
     ~HeapA();
     A* a;
-    int* intType;
 };
 
 HeapA::HeapA()
 {
-    intType = new int;
     a = new A();
 }
 
 HeapA::~HeapA()
 {
-    delete intType; 
     delete a;
 }
 
@@ -122,11 +119,14 @@ FloatType FloatType::divide(float rhs )
     return *this;
 }
 
+////////////////////////////////////////////////////////////////////////
+
 struct DoubleType 
 {
     DoubleType(double);
     ~DoubleType();
     DoubleType add(double rhs );
+    DoubleType add(const FloatType& rhs);
     DoubleType subtract(double rhs );
     DoubleType multiply(double rhs );
     DoubleType divide(double rhs );
@@ -150,6 +150,12 @@ DoubleType DoubleType::add(double rhs)
     return *this;
 }
 
+DoubleType DoubleType::add(const FloatType& rhs)
+{
+    *doubleTypeHeap += *rhs.floatTypeHeap; 
+    return *this;
+}
+
 DoubleType DoubleType::subtract(double rhs)
 {
     *doubleTypeHeap -= rhs;
@@ -169,12 +175,15 @@ DoubleType DoubleType::multiply(double rhs)
 }
 
 
+/////////////////////////////////////////////////////////////////
+
 struct IntType
 {
     IntType(int);
     ~IntType();
     IntType add(int rhs );
     IntType subtract(int rhs );
+    IntType subtract(const DoubleType& rhs);
     IntType multiply(int rhs );
     IntType divide(int rhs );
     int* intTypeHeap;
@@ -203,6 +212,12 @@ IntType IntType::subtract(int rhs)
     return *this;
 }
 
+IntType IntType::subtract(const DoubleType& rhs)
+{
+    *intTypeHeap += *rhs.doubleTypeHeap; 
+    return *this;
+}
+
 IntType IntType::multiply(int rhs)
 {
     *intTypeHeap *= rhs;
@@ -220,21 +235,25 @@ IntType IntType::divide(int rhs)
     return *this;
 }
 
+/////////////////////////////////////////////////////
+
 int main()
 {
     FloatType f(2.0f);
-    IntType i(2);
     DoubleType d(2.0);
+    IntType i(2);
 
-    auto fResult1 = f.add(2.0f).subtract(1.0f);
+    auto fResult = *f.multiply(12.5).divide(4.6).floatTypeHeap; 
 
-    auto fResult2 = f.subtract(1.5f).multiply(4);
+    auto dResult = *d.multiply(4.4567).add(f).doubleTypeHeap;
 
-    auto iResult1 = i.multiply(6).divide(8);
+    auto iResult = *i.add(10).subtract(d).intTypeHeap;
 
-    auto dResult1 = d.multiply(4.4567).subtract(6.8526893);
+    std::cout << "multiplying f by 12.5 and dividing by 4.6 results in:" << fResult << std::endl;
 
-    auto dResult2 = d.add(45.6784).divide(3.49).multiply(9.329);
+    std::cout << "Multipying d by 4.4567 and adding f results in: "<< dResult << std::endl;
+
+    std::cout << "Adding 10 to i and subtracting d results in: "<< iResult << std::endl;
 
     std::cout << "good to go!" << std::endl;
 }
