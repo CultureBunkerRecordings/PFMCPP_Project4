@@ -14,15 +14,27 @@ New/This/Pointers/References conclusion
          on the heap without leaking, without using smart pointers. 
  */
 
+struct A{};
 
+struct HeapA
+{
+    HeapA();
+    ~HeapA();
+    A* a;
+    int* intType;
+};
 
+HeapA::HeapA()
+{
+    intType = new int;
+    a = new A();
+}
 
-
-
-
-
-
-
+HeapA::~HeapA()
+{
+    delete intType; 
+    delete a;
+}
 
  /*
  1) Edit your 3 structs so that they own a heap-allocated primitive type without using smart pointers  
@@ -65,111 +77,164 @@ New/This/Pointers/References conclusion
 
 struct FloatType
 {
-    float add( float lhs, float rhs );
-    float subtract( float lhs, float rhs );
-    float multiply( float lhs, float rhs );
-    float divide( float lhs, float rhs );
+    FloatType(float);
+    ~FloatType();
+    FloatType add(float rhs );
+    FloatType subtract(float rhs );
+    FloatType multiply(float rhs );
+    FloatType divide(float rhs );
+
+    float* floatTypeHeap;
 };
 
-float FloatType::add( float lhs, float rhs )
+FloatType::FloatType(float floatValue)
 {
-    return  lhs + rhs;
+    floatTypeHeap = new float;
+    *floatTypeHeap = floatValue;
 }
 
-float FloatType::subtract( float lhs, float rhs )
+FloatType::~FloatType()
 {
-    return lhs - rhs;
+    delete floatTypeHeap;
 }
 
-float FloatType::multiply( float lhs, float rhs )
+FloatType FloatType::add(float rhs )
 {
-    return lhs * rhs;
+      *floatTypeHeap += rhs;
+      return *this; 
 }
 
-float FloatType::divide( float lhs, float rhs )
+FloatType FloatType::subtract(float rhs )
 {
-    return lhs/rhs;
+    *floatTypeHeap -= rhs;
+    return *this;
+}
+
+FloatType FloatType::multiply(float rhs )
+{
+    *floatTypeHeap *= rhs;
+    return *this;
+}
+
+FloatType FloatType::divide(float rhs )
+{
+    *floatTypeHeap /=rhs;
+    return *this;
 }
 
 struct DoubleType 
 {
-    double add( double lhs, double rhs );
-    double subtract( double lhs, double rhs );
-    double multiply( double lhs, double rhs );
-    double divide( double lhs, double rhs );
+    DoubleType(double);
+    ~DoubleType();
+    DoubleType add(double rhs );
+    DoubleType subtract(double rhs );
+    DoubleType multiply(double rhs );
+    DoubleType divide(double rhs );
+    double* doubleTypeHeap;
 };
 
-double DoubleType::add(double lhs, double rhs)
+DoubleType::DoubleType(double doubleValue)
 {
-    return lhs + rhs;
+    doubleTypeHeap = new double;
+    *doubleTypeHeap = doubleValue;
 }
 
-double DoubleType::subtract(double lhs, double rhs)
+DoubleType::~DoubleType()
 {
-    return lhs - rhs;
+    delete doubleTypeHeap;
 }
 
-double DoubleType::divide(double lhs, double rhs)
+DoubleType DoubleType::add(double rhs)
 {
-    return lhs/rhs;
+    *doubleTypeHeap += rhs;
+    return *this;
 }
 
-double DoubleType::multiply(double lhs, double rhs)
+DoubleType DoubleType::subtract(double rhs)
 {
-    return lhs * rhs;
+    *doubleTypeHeap -= rhs;
+    return *this;
+}
+
+DoubleType DoubleType::divide(double rhs)
+{
+    *doubleTypeHeap /= rhs;
+    return *this;
+}
+
+DoubleType DoubleType::multiply(double rhs)
+{
+    *doubleTypeHeap *= rhs;
+    return *this;
 }
 
 
 struct IntType
 {
-    int add( int lhs, int rhs );
-    int subtract( int lhs, int rhs );
-    int multiply( int lhs, int rhs );
-    int divide( int lhs, int rhs );
+    IntType(int);
+    ~IntType();
+    IntType add(int rhs );
+    IntType subtract(int rhs );
+    IntType multiply(int rhs );
+    IntType divide(int rhs );
+    int* intTypeHeap;
 };
 
-int IntType::add(int lhs, int rhs)
+IntType::IntType(int intValue)
 {
-    return lhs+rhs;
+    intTypeHeap = new int;
+    *intTypeHeap = intValue;
 }
 
-int IntType::subtract(int lhs, int rhs)
+IntType::~IntType()
 {
-    return lhs-rhs;
+    delete intTypeHeap;
 }
 
-int IntType::multiply(int lhs, int rhs)
+IntType IntType::add(int rhs)
 {
-    return lhs*rhs;
+    *intTypeHeap += rhs;
+    return *this;
 }
 
-int IntType::divide(int lhs, int rhs)
+IntType IntType::subtract(int rhs)
+{
+    *intTypeHeap -= rhs;
+    return *this;
+}
+
+IntType IntType::multiply(int rhs)
+{
+    *intTypeHeap *= rhs;
+    return *this;
+}
+
+IntType IntType::divide(int rhs)
 {
     if (rhs == 0)
     {
         std::cout << "error divide by zero" << std::endl;
-        return 0;
+        *intTypeHeap = 0;
     }
-    return lhs/rhs;
+    *intTypeHeap /= rhs;
+    return *this;
 }
 
 int main()
 {
-    FloatType f;
-    IntType i;
-    DoubleType d;
+    FloatType f(2.0f);
+    IntType i(2);
+    DoubleType d(2.0);
 
-    auto addF = f.add(2.5f, 6.5f);
-    auto subF = f.subtract(2.5f, 6.5f);
-    auto divI = i.divide(8, 2);
-    auto multiD = d.multiply(4.4567, 3.7899765);
-    auto subD = d.subtract(45.6784, 20.7895);
+    auto fResult1 = f.add(2.0f).subtract(1.0f);
 
-    std::cout << "result of f.add(): " << addF << std::endl; 
-    std::cout << "result of f.subtract(): " << subF << std::endl;
-    std::cout << "result of i.divide(): " << divI << std::endl;
-    std::cout << "result of d.multiply(): " << multiD << std::endl;
-    std::cout << "result of d.subtract(): "<< subD << std::endl;
+    auto fResult2 = f.subtract(1.5f).multiply(4);
+
+    auto iResult1 = i.multiply(6).divide(8);
+
+    auto dResult1 = d.multiply(4.4567).subtract(6.8526893);
+
+    auto dResult2 = d.add(45.6784).divide(3.49).multiply(9.329);
 
     std::cout << "good to go!" << std::endl;
 }
