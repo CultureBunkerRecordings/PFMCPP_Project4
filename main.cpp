@@ -69,13 +69,15 @@ HeapA::~HeapA()
  */
 
 
-
+//#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
 #include <iostream>
 
 struct FloatType
 {
     FloatType(float);
     ~FloatType();
+    FloatType(const FloatType& other);
+    
     FloatType add(float rhs );
     FloatType subtract(float rhs );
     FloatType multiply(float rhs );
@@ -92,6 +94,11 @@ FloatType::FloatType(float floatValue)
 FloatType::~FloatType()
 {
     delete floatTypeHeap;
+}
+
+FloatType::FloatType(const FloatType& other)
+{
+    floatTypeHeap = other.floatTypeHeap;
 }
 
 FloatType FloatType::add(float rhs )
@@ -124,6 +131,8 @@ struct DoubleType
 {
     DoubleType(double);
     ~DoubleType();
+    DoubleType(const DoubleType& other);
+    
     DoubleType add(double rhs );
     DoubleType add(const FloatType& rhs);
     DoubleType subtract(double rhs );
@@ -140,6 +149,11 @@ DoubleType::DoubleType(double doubleValue)
 DoubleType::~DoubleType()
 {
     delete doubleTypeHeap;
+}
+
+DoubleType::DoubleType(const DoubleType& other)
+{
+    doubleTypeHeap = other.doubleTypeHeap;
 }
 
 DoubleType DoubleType::add(double rhs)
@@ -179,6 +193,8 @@ struct IntType
 {
     IntType(int);
     ~IntType();
+    IntType(const IntType& other);
+
     IntType add(int rhs );
     IntType subtract(int rhs );
     IntType subtract(const DoubleType& rhs);
@@ -195,6 +211,11 @@ IntType::IntType(int intValue)
 IntType::~IntType()
 {
     delete intTypeHeap;
+}
+
+IntType::IntType(const IntType& other)
+{
+    intTypeHeap = other.intTypeHeap;
 }
 
 IntType IntType::add(int rhs)
