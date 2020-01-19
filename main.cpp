@@ -76,7 +76,6 @@ struct FloatType
 {
     FloatType(float);
     ~FloatType();
-    FloatType(const FloatType& other);
     
     FloatType add(float rhs );
     FloatType subtract(float rhs );
@@ -94,11 +93,6 @@ FloatType::FloatType(float floatValue)
 FloatType::~FloatType()
 {
     delete floatTypeHeap;
-}
-
-FloatType::FloatType(const FloatType& other)
-{
-    floatTypeHeap = other.floatTypeHeap;
 }
 
 FloatType FloatType::add(float rhs )
@@ -131,8 +125,7 @@ struct DoubleType
 {
     DoubleType(double);
     ~DoubleType();
-    DoubleType(const DoubleType& other);
-    
+     
     DoubleType add(double rhs );
     DoubleType add(const FloatType& rhs);
     DoubleType subtract(double rhs );
@@ -149,11 +142,6 @@ DoubleType::DoubleType(double doubleValue)
 DoubleType::~DoubleType()
 {
     delete doubleTypeHeap;
-}
-
-DoubleType::DoubleType(const DoubleType& other)
-{
-    doubleTypeHeap = other.doubleTypeHeap;
 }
 
 DoubleType DoubleType::add(double rhs)
@@ -195,54 +183,59 @@ struct IntType
     ~IntType();
     IntType(const IntType& other);
 
-    IntType add(int rhs );
-    IntType subtract(int rhs );
-    IntType subtract(const DoubleType& rhs);
-    IntType multiply(int rhs );
-    IntType divide(int rhs );
+    IntType& add(int rhs );
+    IntType& subtract(int rhs );
+    IntType& subtract(const DoubleType& rhs);
+    IntType& multiply(int rhs );
+    IntType& divide(int rhs );
     int* intTypeHeap;
 };
 
 IntType::IntType(int intValue)
 {
+    std::cout << "making IntType\n";
     intTypeHeap = new int(intValue);
 }
 
 IntType::~IntType()
 {
+    std::cout << "deleting IntType heap: " << intTypeHeap << "\n";
+    std::cout << "is intTypeHeap null? " << (intTypeHeap == nullptr ? "yes" : "no") << "\n";
     delete intTypeHeap;
 }
 
 IntType::IntType(const IntType& other)
 {
+    std::cout << "copying IntType\n";
     intTypeHeap = other.intTypeHeap;
+    std::cout << "this heap: " << intTypeHeap << " other heap: " << other.intTypeHeap << std::endl; 
 }
 
-IntType IntType::add(int rhs)
+IntType& IntType::add(int rhs)
 {
     *intTypeHeap += rhs;
     return *this;
 }
 
-IntType IntType::subtract(int rhs)
+IntType& IntType::subtract(int rhs)
 {
     *intTypeHeap -= rhs;
     return *this;
 }
 
-IntType IntType::subtract(const DoubleType& rhs)
+IntType& IntType::subtract(const DoubleType& rhs)
 {
     *intTypeHeap += *rhs.doubleTypeHeap; 
     return *this;
 }
 
-IntType IntType::multiply(int rhs)
+IntType& IntType::multiply(int rhs)
 {
     *intTypeHeap *= rhs;
     return *this;
 }
 
-IntType IntType::divide(int rhs)
+IntType& IntType::divide(int rhs)
 {
     if (rhs == 0)
     {
@@ -257,21 +250,29 @@ IntType IntType::divide(int rhs)
 
 int main()
 {
-    FloatType f(2.0f);
-    DoubleType d(2.0);
-    IntType i(2);
+    // FloatType f(2.0f);
+    // DoubleType d(2.0);
+    // IntType i(2);
 
-    auto fResult = *f.multiply(12.5).divide(4.6).floatTypeHeap; 
+    {
+        IntType it(1);    
+        {
+            std::cout << "making copy of IntType\n"; 
+            IntType i2(it); //invoke copy constructor
+        }   //i2 is deleted
+    } //it is deleted
 
-    auto dResult = *d.multiply(4.4567).add(f).doubleTypeHeap;
+    // auto fResult = *f.multiply(12.5).divide(4.6).floatTypeHeap; 
 
-    auto iResult = *i.add(10).subtract(d).intTypeHeap;
+    // auto dResult = *d.multiply(4.4567).add(f).doubleTypeHeap;
 
-    std::cout << "multiplying f by 12.5 and dividing by 4.6 results in:" << fResult << std::endl;
+    // auto iResult = *i.add(10).subtract(d).intTypeHeap;
 
-    std::cout << "Multipying d by 4.4567 and adding f results in: "<< dResult << std::endl;
+    // std::cout << "multiplying f by 12.5 and dividing by 4.6 results in:" << fResult << std::endl;
 
-    std::cout << "Adding 10 to i and subtracting d results in: "<< iResult << std::endl;
+    // std::cout << "Multipying d by 4.4567 and adding f results in: "<< dResult << std::endl;
 
-    std::cout << "good to go!" << std::endl;
+    // std::cout << "Adding 10 to i and subtracting d results in: "<< iResult << std::endl;
+
+    // std::cout << "good to go!" << std::endl;
 }
