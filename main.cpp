@@ -86,8 +86,7 @@ struct FloatType
 
 FloatType::FloatType(float floatValue)
 {
-    floatTypeHeap = new float;
-    *floatTypeHeap = floatValue;
+    floatTypeHeap = new float(floatValue);
 }
 
 FloatType::~FloatType()
@@ -135,8 +134,7 @@ struct DoubleType
 
 DoubleType::DoubleType(double doubleValue)
 {
-    doubleTypeHeap = new double;
-    *doubleTypeHeap = doubleValue;
+    doubleTypeHeap = new double(doubleValue);
 }
 
 DoubleType::~DoubleType()
@@ -191,8 +189,7 @@ struct IntType
 
 IntType::IntType(int intValue)
 {
-    intTypeHeap = new int;
-    *intTypeHeap = intValue;
+    intTypeHeap = new int(intValue);
 }
 
 IntType::~IntType()
