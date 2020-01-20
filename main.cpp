@@ -242,8 +242,12 @@ IntType& IntType::divide(int rhs)
     {
         std::cout << "error divide by zero" << std::endl;
         *intTypeHeap = 0; 
+    } 
+    else 
+    { 
+        *intTypeHeap /= rhs;
     }
-    *intTypeHeap /= rhs; FIXME you're still dividing by 0!
+
     return *this;
 }
 
