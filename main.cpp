@@ -97,8 +97,8 @@ FloatType::~FloatType()
 
 FloatType& FloatType::add(float rhs )
 {
-      *floatTypeHeap += rhs;
-      return *this; 
+    *floatTypeHeap += rhs;
+    return *this; 
 }
 
 FloatType& FloatType::subtract(float rhs )
@@ -193,22 +193,17 @@ struct IntType
 
 IntType::IntType(int intValue)
 {
-    std::cout << "making IntType\n";
     intTypeHeap = new int(intValue);
 }
 
 IntType::~IntType()
 {
-    std::cout << "deleting IntType heap: " << intTypeHeap << "\n";
-    std::cout << "is intTypeHeap null? " << (intTypeHeap == nullptr ? "yes" : "no") << "\n";
     delete intTypeHeap;
 }
 
 IntType::IntType(const IntType& other)
 {
-    std::cout << "copying IntType\n";
     intTypeHeap = other.intTypeHeap;
-    std::cout << "this heap: " << intTypeHeap << " other heap: " << other.intTypeHeap << std::endl; 
 }
 
 
@@ -259,7 +254,7 @@ int main()
     DoubleType d(2.0);
     IntType i(2);
 
-    auto fResult = *f.multiply(12.5).divide(4.6).floatTypeHeap; 
+    auto fResult = *f.multiply(12.5).divide(4.6).floatTypeHeap; FIXME pass floats to functions that want floats, not doubles. 
 
     auto dResult = *d.multiply(4.4567).add(f).doubleTypeHeap;
 
