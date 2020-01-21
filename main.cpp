@@ -151,7 +151,7 @@ DoubleType& DoubleType::add(double rhs)
 
 DoubleType& DoubleType::add(const FloatType& rhs)
 {
-    *doubleTypeHeap += *rhs.floatTypeHeap; 
+    *doubleTypeHeap += static_cast<double>(*rhs.floatTypeHeap); 
     return *this;
 }
 
