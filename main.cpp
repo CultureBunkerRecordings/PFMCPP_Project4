@@ -14,15 +14,24 @@ New/This/Pointers/References conclusion
          on the heap without leaking, without using smart pointers. 
  */
 
+struct A{};
 
+struct HeapA
+{
+    HeapA();
+    ~HeapA();
+    A* a;
+};
 
+HeapA::HeapA()
+{
+    a = new A();
+}
 
-
-
-
-
-
-
+HeapA::~HeapA()
+{
+    delete a;
+}
 
  /*
  1) Edit your 3 structs so that they own a heap-allocated primitive type without using smart pointers  
@@ -60,116 +69,201 @@ New/This/Pointers/References conclusion
  */
 
 
-
+//#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
 #include <iostream>
 
 struct FloatType
 {
-    float add( float lhs, float rhs );
-    float subtract( float lhs, float rhs );
-    float multiply( float lhs, float rhs );
-    float divide( float lhs, float rhs );
+    FloatType(float);
+    ~FloatType();
+    FloatType& add(float rhs);
+    FloatType& subtract(float rhs);
+    FloatType& multiply(float rhs);
+    FloatType& divide(float rhs);
+
+    float* floatTypeHeap;
 };
 
-float FloatType::add( float lhs, float rhs )
+FloatType::FloatType(float floatValue)
 {
-    return  lhs + rhs;
+    floatTypeHeap = new float(floatValue);
 }
 
-float FloatType::subtract( float lhs, float rhs )
+FloatType::~FloatType()
 {
-    return lhs - rhs;
+    delete floatTypeHeap;
 }
 
-float FloatType::multiply( float lhs, float rhs )
+FloatType& FloatType::add(float rhs)
 {
-    return lhs * rhs;
+    *floatTypeHeap += rhs;
+    return *this; 
 }
 
-float FloatType::divide( float lhs, float rhs )
+FloatType& FloatType::subtract(float rhs)
 {
-    return lhs/rhs;
+    *floatTypeHeap -= rhs;
+    return *this;
 }
+
+FloatType& FloatType::multiply(float rhs)
+{
+    *floatTypeHeap *= rhs;
+    return *this;
+}
+
+FloatType& FloatType::divide(float rhs)
+{
+    *floatTypeHeap /=rhs;
+    return *this;
+}
+
+////////////////////////////////////////////////////////////////////////
 
 struct DoubleType 
 {
-    double add( double lhs, double rhs );
-    double subtract( double lhs, double rhs );
-    double multiply( double lhs, double rhs );
-    double divide( double lhs, double rhs );
+    DoubleType(double);
+    ~DoubleType();
+    DoubleType& add(double rhs );
+    DoubleType& add(const FloatType& rhs);
+    DoubleType& subtract(double rhs );
+    DoubleType& multiply(double rhs );
+    DoubleType& divide(double rhs );
+
+    double* doubleTypeHeap;
 };
 
-double DoubleType::add(double lhs, double rhs)
+DoubleType::DoubleType(double doubleValue)
 {
-    return lhs + rhs;
+    doubleTypeHeap = new double(doubleValue);
 }
 
-double DoubleType::subtract(double lhs, double rhs)
+DoubleType::~DoubleType()
 {
-    return lhs - rhs;
+    delete doubleTypeHeap;
 }
 
-double DoubleType::divide(double lhs, double rhs)
+DoubleType& DoubleType::add(double rhs)
 {
-    return lhs/rhs;
+    *doubleTypeHeap += rhs;
+    return *this;
 }
 
-double DoubleType::multiply(double lhs, double rhs)
+DoubleType& DoubleType::add(const FloatType& rhs)
 {
-    return lhs * rhs;
+    *doubleTypeHeap += static_cast<double>(*rhs.floatTypeHeap); 
+    return *this;
 }
 
+DoubleType& DoubleType::subtract(double rhs)
+{
+    *doubleTypeHeap -= rhs;
+    return *this;
+}
+
+DoubleType& DoubleType::divide(double rhs)
+{
+    *doubleTypeHeap /= rhs;
+    return *this;
+}
+
+DoubleType& DoubleType::multiply(double rhs)
+{
+    *doubleTypeHeap *= rhs;
+    return *this;
+}
+
+
+/////////////////////////////////////////////////////////////////
 
 struct IntType
 {
-    int add( int lhs, int rhs );
-    int subtract( int lhs, int rhs );
-    int multiply( int lhs, int rhs );
-    int divide( int lhs, int rhs );
+    IntType(int);
+    ~IntType();
+    IntType(const IntType& other);
+    IntType& add(int rhs );
+    IntType& subtract(int rhs );
+    IntType& subtract(const DoubleType& rhs);
+    IntType& multiply(int rhs );
+    IntType& divide(int rhs );
+    
+    int* intTypeHeap = nullptr;
 };
 
-int IntType::add(int lhs, int rhs)
+IntType::IntType(int intValue)
 {
-    return lhs+rhs;
+    intTypeHeap = new int(intValue);
 }
 
-int IntType::subtract(int lhs, int rhs)
+IntType::~IntType()
 {
-    return lhs-rhs;
+    delete intTypeHeap;
 }
 
-int IntType::multiply(int lhs, int rhs)
+IntType::IntType(const IntType& other)
 {
-    return lhs*rhs;
+    intTypeHeap = other.intTypeHeap;
 }
 
-int IntType::divide(int lhs, int rhs)
+
+IntType& IntType::add(int rhs)
+{
+    *intTypeHeap += rhs;
+    return *this;
+}
+
+IntType& IntType::subtract(int rhs)
+{
+    *intTypeHeap -= rhs;
+    return *this;
+}
+
+IntType& IntType::subtract(const DoubleType& rhs)
+{
+    *intTypeHeap += *rhs.doubleTypeHeap; 
+    return *this;
+}
+
+IntType& IntType::multiply(int rhs)
+{
+    *intTypeHeap *= rhs;
+    return *this;
+}
+
+IntType& IntType::divide(int rhs)
 {
     if (rhs == 0)
     {
         std::cout << "error divide by zero" << std::endl;
-        return 0;
+        *intTypeHeap = 0; 
+    } 
+    else 
+    { 
+        *intTypeHeap /= rhs;
     }
-    return lhs/rhs;
+
+    return *this;
 }
+
+/////////////////////////////////////////////////////
 
 int main()
 {
-    FloatType f;
-    IntType i;
-    DoubleType d;
+    FloatType f(2.0f);
+    DoubleType d(2.0);
+    IntType i(2);
 
-    auto addF = f.add(2.5f, 6.5f);
-    auto subF = f.subtract(2.5f, 6.5f);
-    auto divI = i.divide(8, 2);
-    auto multiD = d.multiply(4.4567, 3.7899765);
-    auto subD = d.subtract(45.6784, 20.7895);
+    auto fResult = *f.multiply(12.5f).divide(4.6f).floatTypeHeap;
 
-    std::cout << "result of f.add(): " << addF << std::endl; 
-    std::cout << "result of f.subtract(): " << subF << std::endl;
-    std::cout << "result of i.divide(): " << divI << std::endl;
-    std::cout << "result of d.multiply(): " << multiD << std::endl;
-    std::cout << "result of d.subtract(): "<< subD << std::endl;
+    auto dResult = *d.multiply(4.4567).add(f).doubleTypeHeap;
+
+    auto iResult = *i.add(10).subtract(d).intTypeHeap;
+
+    std::cout << "multiplying f by 12.5 and dividing by 4.6 results in:" << fResult << std::endl;
+
+    std::cout << "Multipying d by 4.4567 and adding f results in: "<< dResult << std::endl;
+
+    std::cout << "Adding 10 to i and subtracting d results in: "<< iResult << std::endl;
 
     std::cout << "good to go!" << std::endl;
 }
