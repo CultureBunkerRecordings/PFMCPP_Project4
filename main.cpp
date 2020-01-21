@@ -131,6 +131,7 @@ struct DoubleType
     DoubleType& subtract(double rhs );
     DoubleType& multiply(double rhs );
     DoubleType& divide(double rhs );
+
     double* doubleTypeHeap;
 };
 
@@ -188,6 +189,7 @@ struct IntType
     IntType& subtract(const DoubleType& rhs);
     IntType& multiply(int rhs );
     IntType& divide(int rhs );
+    
     int* intTypeHeap = nullptr;
 };
 
@@ -254,7 +256,7 @@ int main()
     DoubleType d(2.0);
     IntType i(2);
 
-    auto fResult = *f.multiply(12.5).divide(4.6).floatTypeHeap; FIXME pass floats to functions that want floats, not doubles. 
+    auto fResult = *f.multiply(12.5f).divide(4.6f).floatTypeHeap;
 
     auto dResult = *d.multiply(4.4567).add(f).doubleTypeHeap;
 
