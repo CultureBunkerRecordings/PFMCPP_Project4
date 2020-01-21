@@ -76,11 +76,10 @@ struct FloatType
 {
     FloatType(float);
     ~FloatType();
-    
-    FloatType& add(float rhs );
-    FloatType& subtract(float rhs );
-    FloatType& multiply(float rhs );
-    FloatType& divide(float rhs );
+    FloatType& add(float rhs);
+    FloatType& subtract(float rhs);
+    FloatType& multiply(float rhs);
+    FloatType& divide(float rhs);
 
     float* floatTypeHeap;
 };
@@ -95,25 +94,25 @@ FloatType::~FloatType()
     delete floatTypeHeap;
 }
 
-FloatType& FloatType::add(float rhs )
+FloatType& FloatType::add(float rhs)
 {
     *floatTypeHeap += rhs;
     return *this; 
 }
 
-FloatType& FloatType::subtract(float rhs )
+FloatType& FloatType::subtract(float rhs)
 {
     *floatTypeHeap -= rhs;
     return *this;
 }
 
-FloatType& FloatType::multiply(float rhs )
+FloatType& FloatType::multiply(float rhs)
 {
     *floatTypeHeap *= rhs;
     return *this;
 }
 
-FloatType& FloatType::divide(float rhs )
+FloatType& FloatType::divide(float rhs)
 {
     *floatTypeHeap /=rhs;
     return *this;
@@ -125,7 +124,6 @@ struct DoubleType
 {
     DoubleType(double);
     ~DoubleType();
-     
     DoubleType& add(double rhs );
     DoubleType& add(const FloatType& rhs);
     DoubleType& subtract(double rhs );
@@ -183,7 +181,6 @@ struct IntType
     IntType(int);
     ~IntType();
     IntType(const IntType& other);
-
     IntType& add(int rhs );
     IntType& subtract(int rhs );
     IntType& subtract(const DoubleType& rhs);
