@@ -38,7 +38,7 @@ struct FloatType
 {
     FloatType(float);
     ~FloatType();
-    operator float() const{return *floatTypeHeap;} FIXME this looks like crap
+    operator float(){ return *floatTypeHeap; }
     FloatType& add(float rhs);
     FloatType& subtract(float rhs);
     FloatType& multiply(float rhs);
@@ -88,7 +88,7 @@ struct DoubleType
 {
     DoubleType(double);
     ~DoubleType();
-    operator double() const{return *doubleTypeHeap;} FIXME this looks like crap
+    operator double() { return *doubleTypeHeap; }
     DoubleType& add(double rhs );
     DoubleType& subtract(double rhs );
     DoubleType& multiply(double rhs );
@@ -139,8 +139,7 @@ struct IntType
 {
     IntType(int);
     ~IntType();
-    operator int() const{return *intTypeHeap;} FIXME this looks like crap
-    IntType(const IntType& other); FIXME remove copy constructors
+    operator int() { return *intTypeHeap; } 
     IntType& add(int rhs );
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
@@ -158,12 +157,6 @@ IntType::~IntType()
 {
     delete intTypeHeap;
 }
-
-IntType::IntType(const IntType& other)
-{
-    intTypeHeap = other.intTypeHeap;
-}
-
 
 IntType& IntType::add(int rhs)
 {
@@ -213,7 +206,7 @@ int main()
 
     auto iResult = i.add(10).subtract(d);
 
-    std::cout << "multiplying f by i and dividing by 4.6 results in:" << fResult << std::endl;
+    std::cout << "multiplying f by i and dividing by 4.6 results in: " << fResult << std::endl;
 
     std::cout << "Multipying d by 4.4567 and dividing it by f results in: "<< dResult << std::endl;
 
