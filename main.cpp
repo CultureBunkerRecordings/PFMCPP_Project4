@@ -38,11 +38,13 @@ struct FloatType
 {
     FloatType(float);
     ~FloatType();
+    operator float() { return *floatTypeHeap; }
     FloatType& add(float rhs);
     FloatType& subtract(float rhs);
     FloatType& multiply(float rhs);
     FloatType& divide(float rhs);
-
+    
+private:
     float* floatTypeHeap;
 };
 
@@ -86,12 +88,13 @@ struct DoubleType
 {
     DoubleType(double);
     ~DoubleType();
+    operator double() { return *doubleTypeHeap; }
     DoubleType& add(double rhs );
-    DoubleType& add(const FloatType& rhs);
     DoubleType& subtract(double rhs );
     DoubleType& multiply(double rhs );
     DoubleType& divide(double rhs );
-
+    
+private:
     double* doubleTypeHeap;
 };
 
@@ -108,12 +111,6 @@ DoubleType::~DoubleType()
 DoubleType& DoubleType::add(double rhs)
 {
     *doubleTypeHeap += rhs;
-    return *this;
-}
-
-DoubleType& DoubleType::add(const FloatType& rhs)
-{
-    *doubleTypeHeap += static_cast<double>(*rhs.floatTypeHeap); 
     return *this;
 }
 
@@ -142,15 +139,14 @@ struct IntType
 {
     IntType(int);
     ~IntType();
-    IntType(const IntType& other);
+    operator int() { return *intTypeHeap; } 
     IntType& add(int rhs );
     IntType& subtract(int rhs );
-    IntType& subtract(const DoubleType& rhs);
     IntType& multiply(int rhs );
     IntType& divide(int rhs );
-    
+private:
     int* intTypeHeap = nullptr;
-};
+}; 
 
 IntType::IntType(int intValue)
 {
@@ -161,12 +157,6 @@ IntType::~IntType()
 {
     delete intTypeHeap;
 }
-
-IntType::IntType(const IntType& other)
-{
-    intTypeHeap = other.intTypeHeap;
-}
-
 
 IntType& IntType::add(int rhs)
 {
@@ -180,11 +170,6 @@ IntType& IntType::subtract(int rhs)
     return *this;
 }
 
-IntType& IntType::subtract(const DoubleType& rhs)
-{
-    *intTypeHeap += *rhs.doubleTypeHeap; 
-    return *this;
-}
 
 IntType& IntType::multiply(int rhs)
 {
@@ -215,15 +200,15 @@ int main()
     DoubleType d(2.0);
     IntType i(2);
 
-    auto fResult = *f.multiply(12.5f).divide(4.6f).floatTypeHeap;
+    float fResult = f.multiply(i).divide(4.6f);
 
-    auto dResult = *d.multiply(4.4567).add(f).doubleTypeHeap;
+    double dResult = d.multiply(4.4567).divide(f);
 
-    auto iResult = *i.add(10).subtract(d).intTypeHeap;
+    int iResult = i.add(10).subtract(d); 
 
-    std::cout << "multiplying f by 12.5 and dividing by 4.6 results in:" << fResult << std::endl;
+    std::cout << "multiplying f by i and dividing by 4.6 results in: " << fResult << std::endl;
 
-    std::cout << "Multipying d by 4.4567 and adding f results in: "<< dResult << std::endl;
+    std::cout << "Multipying d by 4.4567 and dividing it by f results in: "<< dResult << std::endl;
 
     std::cout << "Adding 10 to i and subtracting d results in: "<< iResult << std::endl;
 
