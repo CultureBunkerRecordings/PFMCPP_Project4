@@ -204,7 +204,7 @@ int main()
 
     double dResult = d.multiply(4.4567).divide(f);
 
-    int iResult = i.add(10).subtract(d);
+    int iResult = i.add(10).subtract(d); 
 
     std::cout << "multiplying f by i and dividing by 4.6 results in: " << fResult << std::endl;
 
