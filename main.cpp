@@ -38,13 +38,13 @@ struct FloatType
 {
     FloatType(float);
     ~FloatType();
-    operator float(){ return *floatTypeHeap; }
+    operator float() { return *floatTypeHeap; }
     FloatType& add(float rhs);
     FloatType& subtract(float rhs);
     FloatType& multiply(float rhs);
     FloatType& divide(float rhs);
     
-    private:
+private:
     float* floatTypeHeap;
 };
 
@@ -94,7 +94,7 @@ struct DoubleType
     DoubleType& multiply(double rhs );
     DoubleType& divide(double rhs );
     
-    private:
+private:
     double* doubleTypeHeap;
 };
 
@@ -144,7 +144,7 @@ struct IntType
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
     IntType& divide(int rhs );
-    private:
+private:
     int* intTypeHeap = nullptr;
 }; 
 
@@ -200,11 +200,11 @@ int main()
     DoubleType d(2.0);
     IntType i(2);
 
-    auto fResult = f.multiply(i).divide(4.6f);
+    float fResult = f.multiply(i).divide(4.6f);
 
-    auto dResult = d.multiply(4.4567).divide(f);
+    double dResult = d.multiply(4.4567).divide(f);
 
-    auto iResult = i.add(10).subtract(d);
+    int iResult = i.add(10).subtract(d);
 
     std::cout << "multiplying f by i and dividing by 4.6 results in: " << fResult << std::endl;
 
