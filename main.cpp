@@ -38,7 +38,7 @@ struct FloatType
 {
     FloatType(float);
     ~FloatType();
-    operator float() const{return *floatTypeHeap;};
+    operator float() const{return *floatTypeHeap;}
     FloatType& add(float rhs);
     FloatType& subtract(float rhs);
     FloatType& multiply(float rhs);
@@ -88,7 +88,7 @@ struct DoubleType
 {
     DoubleType(double);
     ~DoubleType();
-    operator double() const{return *doubleTypeHeap;};
+    operator double() const{return *doubleTypeHeap;}
     DoubleType& add(double rhs );
     DoubleType& subtract(double rhs );
     DoubleType& multiply(double rhs );
@@ -139,7 +139,7 @@ struct IntType
 {
     IntType(int);
     ~IntType();
-    operator int() const{return *intTypeHeap;};
+    operator int() const{return *intTypeHeap;}
     IntType(const IntType& other);
     IntType& add(int rhs );
     IntType& subtract(int rhs );
@@ -147,7 +147,7 @@ struct IntType
     IntType& divide(int rhs );
     private:
     int* intTypeHeap = nullptr;
-};
+}; 
 
 IntType::IntType(int intValue)
 {
@@ -213,7 +213,7 @@ int main()
 
     auto iResult = i.add(10).subtract(d);
 
-    std::cout << "multiplying f by 12.5 and dividing by 4.6 results in:" << fResult << std::endl;
+    std::cout << "multiplying f by i and dividing by 4.6 results in:" << fResult << std::endl;
 
     std::cout << "Multipying d by 4.4567 and dividing it by f results in: "<< dResult << std::endl;
 
