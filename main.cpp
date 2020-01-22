@@ -38,7 +38,7 @@ struct FloatType
 {
     FloatType(float);
     ~FloatType();
-    operator float() const{return *floatTypeHeap;}
+    operator float() const{return *floatTypeHeap;} FIXME this looks like crap
     FloatType& add(float rhs);
     FloatType& subtract(float rhs);
     FloatType& multiply(float rhs);
@@ -88,7 +88,7 @@ struct DoubleType
 {
     DoubleType(double);
     ~DoubleType();
-    operator double() const{return *doubleTypeHeap;}
+    operator double() const{return *doubleTypeHeap;} FIXME this looks like crap
     DoubleType& add(double rhs );
     DoubleType& subtract(double rhs );
     DoubleType& multiply(double rhs );
@@ -139,8 +139,8 @@ struct IntType
 {
     IntType(int);
     ~IntType();
-    operator int() const{return *intTypeHeap;}
-    IntType(const IntType& other);
+    operator int() const{return *intTypeHeap;} FIXME this looks like crap
+    IntType(const IntType& other); FIXME remove copy constructors
     IntType& add(int rhs );
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
