@@ -63,14 +63,15 @@ private:
     float x{0}, y{0};
 };
 
-int main()
-{
+// int main()
+// {
     
-}
+// }
 
 
 //#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
 #include <iostream>
+#include <cmath>
 
 struct FloatType
 {
@@ -81,6 +82,8 @@ struct FloatType
     FloatType& subtract(float rhs);
     FloatType& multiply(float rhs);
     FloatType& divide(float rhs);
+    FloatType& pow(int power);
+    float powInternal(float fTH, int power);
     
 private:
     float* floatTypeHeap;
@@ -120,6 +123,18 @@ FloatType& FloatType::divide(float rhs)
     return *this;
 }
 
+FloatType& FloatType::pow(int power)
+{
+    *floatTypeHeap = powInternal(*floatTypeHeap, power);
+    return *this;
+}
+
+float FloatType::powInternal(float fTH, int power)
+{
+    return std::pow(fTH, power);
+}
+
+
 ////////////////////////////////////////////////////////////////////////
 
 struct DoubleType 
@@ -131,6 +146,9 @@ struct DoubleType
     DoubleType& subtract(double rhs );
     DoubleType& multiply(double rhs );
     DoubleType& divide(double rhs );
+    DoubleType& pow(int power);
+    double powInternal(double dTH, int power);
+
     
 private:
     double* doubleTypeHeap;
@@ -170,6 +188,18 @@ DoubleType& DoubleType::multiply(double rhs)
     return *this;
 }
 
+DoubleType& DoubleType::pow(int power)
+{
+    *doubleTypeHeap = powInternal(*doubleTypeHeap, power);
+    return *this;
+}
+
+double DoubleType::powInternal(double dTH, int power)
+{
+    return std::pow(dTH, power); 
+}
+
+
 
 /////////////////////////////////////////////////////////////////
 
@@ -182,6 +212,8 @@ struct IntType
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
     IntType& divide(int rhs );
+    IntType& pow(int power);
+    int powInternal(int iTH, int power);
 private:
     int* intTypeHeap = nullptr;
 }; 
@@ -228,6 +260,17 @@ IntType& IntType::divide(int rhs)
     }
 
     return *this;
+}
+
+IntType& IntType::pow(int power)
+{
+    *intTypeHeap = powInternal(*intTypeHeap, power);
+    return *this;
+}
+
+int IntType::powInternal(int iTH, int power)
+{
+    return std::pow(iTH, power);
 }
 
 /////////////////////////////////////////////////////
