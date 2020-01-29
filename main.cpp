@@ -82,7 +82,7 @@ struct IntType
 {
     IntType(int);
     ~IntType();
-    operator int() { return *intTypeHeap; } FIXME this doesn't modify any members of IntType, which means it can be marked as ....
+    operator int() const { return *intTypeHeap; } 
     IntType& add(int rhs );
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
@@ -92,9 +92,48 @@ struct IntType
     IntType& pow(const FloatType& floatRef);
     IntType& pow(const DoubleType& doubleRef);
     int powInternal(int power);
-
+    // private:
     int* intTypeHeap = nullptr;
 }; 
+
+struct FloatType
+{
+    FloatType(float);
+    ~FloatType();
+    operator float() const { return *floatTypeHeap; }
+    FloatType& add(float rhs);
+    FloatType& subtract(float rhs);
+    FloatType& multiply(float rhs);
+    FloatType& divide(float rhs);
+    FloatType& pow(float power);
+    FloatType& pow(const IntType& intRef);
+    FloatType& pow(const FloatType& floatRef);
+    FloatType& pow(const DoubleType& doubleRef);
+    float powInternal(float power);
+    
+private:
+    float* floatTypeHeap;
+};
+
+struct DoubleType 
+{
+    DoubleType(double);
+    ~DoubleType();
+    operator double() const { return *doubleTypeHeap; }
+    DoubleType& add(double rhs );
+    DoubleType& subtract(double rhs );
+    DoubleType& multiply(double rhs );
+    DoubleType& divide(double rhs );
+    const DoubleType& pow(double power);
+    DoubleType& pow(const IntType& intRef);
+    DoubleType& pow(const FloatType& floatRef);
+    DoubleType& pow(const DoubleType& doubleRef);
+    double powInternal(double power);
+
+    
+private:
+    double* doubleTypeHeap;
+};
 
 IntType::IntType(int intValue)
 {
@@ -148,14 +187,8 @@ IntType& IntType::pow(int power)
 
 IntType& IntType::pow(const IntType& intRef)
 {
-    *intTypeHeap = powInternal(static_cast<int>(intRef));
-    return *this;
-}
-
-IntType& IntType::pow(const FloatType& floatRef)
-{
-    *intTypeHeap = powInternal(floatRef);
-    return *this;
+    *intTypeHeap = powInternal(intRef);
+    return *this;   
 }
 
 IntType& IntType::pow(const DoubleType& doubleRef)
@@ -171,24 +204,12 @@ int IntType::powInternal(int power)
 
 /////////////////////////////////////////////////////
 
-struct FloatType
+
+IntType& IntType::pow(const FloatType& floatRef)
 {
-    FloatType(float);
-    ~FloatType();
-    operator float() { return *floatTypeHeap; }
-    FloatType& add(float rhs);
-    FloatType& subtract(float rhs);
-    FloatType& multiply(float rhs);
-    FloatType& divide(float rhs);
-    FloatType& pow(float power);
-    FloatType& pow(const IntType& intRef);
-    FloatType& pow(const FloatType& floatRef);
-    FloatType& pow(const DoubleType& doubleRef);
-    float powInternal(float power);
-    
-private:
-    float* floatTypeHeap;
-};
+    *intTypeHeap = powInternal(floatRef);
+    return *this;
+}
 
 FloatType::FloatType(float floatValue)
 {
@@ -226,29 +247,25 @@ FloatType& FloatType::divide(float rhs)
 
 FloatType& FloatType::pow(float power)
 {
-    *floatTypeHeap = powInternal(power);
+    powInternal(power);
     return *this;
 }
 
 FloatType& FloatType::pow(const IntType& intRef)
 { 
-    // IntType intRefNoConst = const_cast<IntType&>(intRef);  
-    // float power = static_cast<float>(intRefNoConst);
-    *floatTypeHeap = pow(intRef);
+    powInternal(intRef);
     return *this; 
 }
 
 FloatType& FloatType::pow(const FloatType& floatRef)
 {
-    FloatType floatRefNoConst = const_cast<FloatType&>(floatRef);  
-    float power = static_cast<float>(floatRefNoConst);
-    *floatTypeHeap = pow(power);
+    powInternal(floatRef);
     return *this; 
 }
 
 FloatType& FloatType::pow(const DoubleType& doubleRef)
 {
-    *floatTypeHeap = pow(doubleRef);
+    *floatTypeHeap = powInternal(doubleRef);
     return *this; 
 }
 
@@ -260,25 +277,7 @@ float FloatType::powInternal(float power)
 
 ////////////////////////////////////////////////////////////////////////
 
-struct DoubleType 
-{
-    DoubleType(double);
-    ~DoubleType();
-    operator double() { return *doubleTypeHeap; }
-    DoubleType& add(double rhs );
-    DoubleType& subtract(double rhs );
-    DoubleType& multiply(double rhs );
-    DoubleType& divide(double rhs );
-    const DoubleType& pow(double power);
-    DoubleType& pow(const IntType& intRef);
-    DoubleType& pow(const FloatType& floatRef);
-    DoubleType& pow(const DoubleType& doubleRef);
-    double powInternal(double dTH, int power);
 
-    
-private:
-    double* doubleTypeHeap;
-};
 
 DoubleType::DoubleType(double doubleValue)
 {
@@ -316,35 +315,32 @@ DoubleType& DoubleType::multiply(double rhs)
 
 const DoubleType& DoubleType::pow(double power)
 {
-    *doubleTypeHeap = powInternal(*doubleTypeHeap, power);
+    *doubleTypeHeap = powInternal(power);
     return *this;
 }
 
 DoubleType& DoubleType::pow(const IntType& intRef)
 {
-    *doubleTypeHeap = pow(intRef);
+    *doubleTypeHeap = powInternal(intRef);
     return *this;
 }
 
 DoubleType& DoubleType::pow(const FloatType& floatRef)
 {
-    *doubleTypeHeap = pow(floatRef);
+    *doubleTypeHeap = powInternal(floatRef);
     return *this;
 }
 
 DoubleType& DoubleType::pow(const DoubleType& doubleRef)
 {
-    *doubleTypeHeap = pow(doubleRef);
+    *doubleTypeHeap = powInternal(doubleRef);
     return *this;
 }
 
-double DoubleType::powInternal(double dTH, int power)
+double DoubleType::powInternal(double power)
 {
-    return std::pow(dTH, power); 
+    return std::pow(*doubleTypeHeap, power); 
 }
-
-
-
 
 
 int main()
