@@ -1,3 +1,4 @@
+
 /*
 Project 4: Part 4 / 9
  Chapter 4 Part 7
@@ -51,124 +52,21 @@ Project 4: Part 4 / 9
  Wait for my code review.
  */
 
-struct Point
-{
-    Point& multiply(float m)
-    {
-        x *= m;
-        y *= m;
-        return *this;
-    }
-private:
-    float x{0}, y{0};
-};
 
-int main()
-{
+
+// int main()
+// {
     
-}
+// }
 
 
 //#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
 #include <iostream>
+#include <cmath>
 
-struct FloatType
-{
-    FloatType(float);
-    ~FloatType();
-    operator float() { return *floatTypeHeap; }
-    FloatType& add(float rhs);
-    FloatType& subtract(float rhs);
-    FloatType& multiply(float rhs);
-    FloatType& divide(float rhs);
-    
-private:
-    float* floatTypeHeap;
-};
-
-FloatType::FloatType(float floatValue)
-{
-    floatTypeHeap = new float(floatValue);
-}
-
-FloatType::~FloatType()
-{
-    delete floatTypeHeap;
-}
-
-FloatType& FloatType::add(float rhs)
-{
-    *floatTypeHeap += rhs;
-    return *this; 
-}
-
-FloatType& FloatType::subtract(float rhs)
-{
-    *floatTypeHeap -= rhs;
-    return *this;
-}
-
-FloatType& FloatType::multiply(float rhs)
-{
-    *floatTypeHeap *= rhs;
-    return *this;
-}
-
-FloatType& FloatType::divide(float rhs)
-{
-    *floatTypeHeap /=rhs;
-    return *this;
-}
-
-////////////////////////////////////////////////////////////////////////
-
-struct DoubleType 
-{
-    DoubleType(double);
-    ~DoubleType();
-    operator double() { return *doubleTypeHeap; }
-    DoubleType& add(double rhs );
-    DoubleType& subtract(double rhs );
-    DoubleType& multiply(double rhs );
-    DoubleType& divide(double rhs );
-    
-private:
-    double* doubleTypeHeap;
-};
-
-DoubleType::DoubleType(double doubleValue)
-{
-    doubleTypeHeap = new double(doubleValue);
-}
-
-DoubleType::~DoubleType()
-{
-    delete doubleTypeHeap;
-}
-
-DoubleType& DoubleType::add(double rhs)
-{
-    *doubleTypeHeap += rhs;
-    return *this;
-}
-
-DoubleType& DoubleType::subtract(double rhs)
-{
-    *doubleTypeHeap -= rhs;
-    return *this;
-}
-
-DoubleType& DoubleType::divide(double rhs)
-{
-    *doubleTypeHeap /= rhs;
-    return *this;
-}
-
-DoubleType& DoubleType::multiply(double rhs)
-{
-    *doubleTypeHeap *= rhs;
-    return *this;
-}
+struct FloatType;
+struct DoubleType;
+struct IntType;
 
 
 /////////////////////////////////////////////////////////////////
@@ -177,14 +75,107 @@ struct IntType
 {
     IntType(int);
     ~IntType();
-    operator int() { return *intTypeHeap; } 
+    operator int() const { return *intTypeHeap; }
     IntType& add(int rhs );
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
     IntType& divide(int rhs );
+    IntType& pow(int power);
+    IntType& pow(const IntType& intRef);
+    IntType& pow(const FloatType& floatRef);
+    IntType& pow(const DoubleType& doubleRef);
+    
 private:
+    int powInternal(int power);
     int* intTypeHeap = nullptr;
 }; 
+
+struct FloatType
+{
+    FloatType(float);
+    ~FloatType();
+    operator float() const { return *floatTypeHeap; }
+    FloatType& add(float rhs);
+    FloatType& subtract(float rhs);
+    FloatType& multiply(float rhs);
+    FloatType& divide(float rhs);
+    FloatType& pow(float power);
+    FloatType& pow(const IntType& intRef);
+    FloatType& pow(const FloatType& floatRef);
+    FloatType& pow(const DoubleType& doubleRef);    
+private:
+    float powInternal(float power);
+    float* floatTypeHeap = nullptr;
+};
+
+struct DoubleType 
+{
+    DoubleType(double);
+    ~DoubleType();
+    operator double() const { return *doubleTypeHeap; }
+    DoubleType& add(double rhs );
+    DoubleType& subtract(double rhs );
+    DoubleType& multiply(double rhs );
+    DoubleType& divide(double rhs );
+    const DoubleType& pow(double power);
+    DoubleType& pow(const IntType& intRef);
+    DoubleType& pow(const FloatType& floatRef);
+    DoubleType& pow(const DoubleType& doubleRef);
+    
+private:
+    double powInternal(double power);
+    double* doubleTypeHeap = nullptr;
+};
+
+struct Point
+{
+    Point(float xy) : Point(xy, xy) { }  //This calls the constructor below.
+    Point(float _x, float _y) : x(_x), y(_y) { }
+    Point& multiply(float m);
+    Point& multiply(IntType& m);
+    Point& multiply(FloatType& m);
+    Point& multiply(DoubleType& m);
+    void toString();
+private:
+    Point& multiplyInternal(float m);
+    float x{0}, y{0};
+};
+
+
+Point& Point::multiply(float m)
+{
+    return multiplyInternal(m);
+}
+
+Point& Point::multiplyInternal(float m)
+{
+    x *= m;
+    y *= m;
+    return *this;
+}
+
+Point& Point::multiply(IntType& m)
+{
+    return multiplyInternal(m);
+}
+
+Point& Point::multiply(FloatType& m)
+{
+    return multiplyInternal(m);
+}
+
+Point& Point::multiply(DoubleType& m)
+{
+    return multiplyInternal(m);
+}
+
+void Point::toString()
+{
+    std::cout<<"x: "<< x << std::endl;
+    std::cout<<"y: "<< y << std::endl;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 
 IntType::IntType(int intValue)
 {
@@ -230,7 +221,169 @@ IntType& IntType::divide(int rhs)
     return *this;
 }
 
+IntType& IntType::pow(int power)
+{
+    *intTypeHeap = powInternal(power);
+    return *this;
+}
+
+IntType& IntType::pow(const IntType& intRef)
+{
+    *intTypeHeap = powInternal(intRef);
+    return *this;   
+}
+
+IntType& IntType::pow(const DoubleType& doubleRef)
+{
+    *intTypeHeap = powInternal(doubleRef);
+    return *this;
+}
+
+int IntType::powInternal(int power)
+{
+    return std::pow(*intTypeHeap, power);
+}
+
 /////////////////////////////////////////////////////
+
+
+IntType& IntType::pow(const FloatType& floatRef)
+{
+    *intTypeHeap = powInternal(floatRef);
+    return *this;
+}
+
+FloatType::FloatType(float floatValue)
+{
+    floatTypeHeap = new float(floatValue);
+}
+
+FloatType::~FloatType()
+{
+    delete floatTypeHeap;
+}
+
+FloatType& FloatType::add(float rhs)
+{
+    *floatTypeHeap += rhs;
+    return *this; 
+}
+
+FloatType& FloatType::subtract(float rhs)
+{
+    *floatTypeHeap -= rhs;
+    return *this;
+}
+
+FloatType& FloatType::multiply(float rhs)
+{
+    *floatTypeHeap *= rhs;
+    return *this;
+}
+
+FloatType& FloatType::divide(float rhs)
+{
+    *floatTypeHeap /=rhs;
+    return *this;
+}
+
+FloatType& FloatType::pow(float power)
+{
+    powInternal(power);
+    return *this;
+}
+
+FloatType& FloatType::pow(const IntType& intRef)
+{ 
+    powInternal(intRef);
+    return *this; 
+}
+
+FloatType& FloatType::pow(const FloatType& floatRef)
+{
+    powInternal(floatRef);
+    return *this; 
+}
+
+FloatType& FloatType::pow(const DoubleType& doubleRef)
+{
+    *floatTypeHeap = powInternal(doubleRef);
+    return *this; 
+}
+
+float FloatType::powInternal(float power)
+{
+    return std::pow(*floatTypeHeap, power);
+}
+
+
+////////////////////////////////////////////////////////////////////////
+
+
+
+DoubleType::DoubleType(double doubleValue)
+{
+    doubleTypeHeap = new double(doubleValue);
+}
+
+DoubleType::~DoubleType()
+{
+    delete doubleTypeHeap;
+}
+
+DoubleType& DoubleType::add(double rhs)
+{
+    *doubleTypeHeap += rhs;
+    return *this;
+}
+
+DoubleType& DoubleType::subtract(double rhs)
+{
+    *doubleTypeHeap -= rhs;
+    return *this;
+}
+
+DoubleType& DoubleType::divide(double rhs)
+{
+    *doubleTypeHeap /= rhs;
+    return *this;
+}
+
+DoubleType& DoubleType::multiply(double rhs)
+{
+    *doubleTypeHeap *= rhs;
+    return *this;
+}
+
+const DoubleType& DoubleType::pow(double power)
+{
+    *doubleTypeHeap = powInternal(power);
+    return *this;
+}
+
+DoubleType& DoubleType::pow(const IntType& intRef)
+{
+    *doubleTypeHeap = powInternal(intRef);
+    return *this;
+}
+
+DoubleType& DoubleType::pow(const FloatType& floatRef)
+{
+    *doubleTypeHeap = powInternal(floatRef);
+    return *this;
+}
+
+DoubleType& DoubleType::pow(const DoubleType& doubleRef)
+{
+    *doubleTypeHeap = powInternal(doubleRef);
+    return *this;
+}
+
+double DoubleType::powInternal(double power)
+{
+    return std::pow(*doubleTypeHeap, power); 
+}
+
 
 int main()
 {
@@ -238,17 +391,23 @@ int main()
     DoubleType d(2.0);
     IntType i(2);
 
-    float fResult = f.multiply(i).divide(4.6f);
+    Point p(f);
 
-    double dResult = d.multiply(4.4567).divide(f);
+    float fResult = f.pow(i).divide(4.6f);
 
-    int iResult = i.add(10).subtract(d); 
+    double dResult = d.multiply(4.4567).pow(f);
 
-    std::cout << "multiplying f by i and dividing by 4.6 results in: " << fResult << std::endl;
+    int iResult = i.add(10).pow(d); 
 
-    std::cout << "Multipying d by 4.4567 and dividing it by f results in: "<< dResult << std::endl;
+    p.multiply(i).toString();
 
-    std::cout << "Adding 10 to i and subtracting d results in: "<< iResult << std::endl;
+    p.multiply(f).toString();
+
+    std::cout << "f by the power of  i and dividing by 4.6 results in: " << fResult << std::endl;
+
+    std::cout << "d times 4.4567 to the power of f results in: "<< dResult << std::endl;
+
+    std::cout << "Adding 10 to i to the power of d results in: "<< iResult << std::endl;
 
     std::cout << "good to go!" << std::endl;
 }
