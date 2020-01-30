@@ -84,8 +84,9 @@ struct IntType
     IntType& pow(const IntType& intRef);
     IntType& pow(const FloatType& floatRef);
     IntType& pow(const DoubleType& doubleRef);
+    
+private:
     int powInternal(int power);
-    // private:
     int* intTypeHeap = nullptr;
 }; 
 
@@ -101,10 +102,9 @@ struct FloatType
     FloatType& pow(float power);
     FloatType& pow(const IntType& intRef);
     FloatType& pow(const FloatType& floatRef);
-    FloatType& pow(const DoubleType& doubleRef);
-    float powInternal(float power);
-    
+    FloatType& pow(const DoubleType& doubleRef);    
 private:
+    float powInternal(float power);
     float* floatTypeHeap = nullptr;
 };
 
@@ -121,10 +121,9 @@ struct DoubleType
     DoubleType& pow(const IntType& intRef);
     DoubleType& pow(const FloatType& floatRef);
     DoubleType& pow(const DoubleType& doubleRef);
-    double powInternal(double power);
-
     
 private:
+    double powInternal(double power);
     double* doubleTypeHeap = nullptr;
 };
 
