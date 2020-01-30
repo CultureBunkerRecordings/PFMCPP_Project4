@@ -1,2 +1,2 @@
 language = "cpp"
-run = "clang++ -fsanitize=address -std=c++17 -Weverything -Wno-c++98-compat -Wno-missing-prototypes -Wno-float-conversion -Wno-double-promotion -Wno-conversion main.cpp && ./a.out"
+run = "clang++ -fsanitize=address -std=c++17 -Weverything -Wno-c++98-compat -Wno-missing-prototypes -Wno-conversion -Wno-double-promotion main.cpp && ./a.out"
