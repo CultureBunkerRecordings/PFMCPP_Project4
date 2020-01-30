@@ -1,3 +1,4 @@
+
 /*
 Project 4: Part 4 / 9
  Chapter 4 Part 7
@@ -51,17 +52,7 @@ Project 4: Part 4 / 9
  Wait for my code review.
  */
 
-struct Point
-{
-    Point& multiply(float m)
-    {
-        x *= m;
-        y *= m;
-        return *this;
-    }
-private:
-    float x{0}, y{0};
-};
+
 
 // int main()
 // {
@@ -75,6 +66,8 @@ private:
 
 struct FloatType;
 struct DoubleType;
+struct IntType;
+
 
 /////////////////////////////////////////////////////////////////
 
@@ -134,6 +127,56 @@ struct DoubleType
 private:
     double* doubleTypeHeap;
 };
+
+struct Point
+{
+    Point(float xy) : Point(xy, xy) { }  //This calls the constructor below.
+    Point(float _x, float _y) : x(_x), y(_y) { }
+    Point& multiply(float m);
+    Point& multiply(IntType& m);
+    Point& multiply(FloatType& m);
+    Point& multiply(DoubleType& m);
+    void toString();
+private:
+    Point& multiplyInternal(float m);
+    float x{0}, y{0};
+};
+
+
+Point& Point::multiply(float m)
+{
+    return multiplyInternal(m);
+}
+
+Point& Point::multiplyInternal(float m)
+{
+    x *= m;
+    y *= m;
+    return *this;
+}
+
+Point& Point::multiply(IntType& m)
+{
+    return multiplyInternal(m);
+}
+
+Point& Point::multiply(FloatType& m)
+{
+    return multiplyInternal(m);
+}
+
+Point& Point::multiply(DoubleType& m)
+{
+    return multiplyInternal(m);
+}
+
+void Point::toString()
+{
+    std::cout<<"x: "<< x << std::endl;
+    std::cout<<"y: "<< y << std::endl;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 
 IntType::IntType(int intValue)
 {
@@ -349,17 +392,23 @@ int main()
     DoubleType d(2.0);
     IntType i(2);
 
-    float fResult = f.multiply(i).divide(4.6f);
+    Point p(f);
 
-    double dResult = d.multiply(4.4567).divide(f);
+    float fResult = f.pow(i).divide(4.6f);
 
-    int iResult = i.add(10).subtract(d); 
+    double dResult = d.multiply(4.4567).pow(f);
 
-    std::cout << "multiplying f by i and dividing by 4.6 results in: " << fResult << std::endl;
+    int iResult = i.add(10).pow(d); 
 
-    std::cout << "Multipying d by 4.4567 and dividing it by f results in: "<< dResult << std::endl;
+    p.multiply(i).toString();
 
-    std::cout << "Adding 10 to i and subtracting d results in: "<< iResult << std::endl;
+    p.multiply(f).toString();
+
+    std::cout << "f by the power of  i and dividing by 4.6 results in: " << fResult << std::endl;
+
+    std::cout << "d times 4.4567 to the power of f results in: "<< dResult << std::endl;
+
+    std::cout << "Adding 10 to i to the power of d results in: "<< iResult << std::endl;
 
     std::cout << "good to go!" << std::endl;
 }
