@@ -105,7 +105,7 @@ struct FloatType
     float powInternal(float power);
     
 private:
-    float* floatTypeHeap;
+    float* floatTypeHeap = nullptr;
 };
 
 struct DoubleType 
@@ -125,7 +125,7 @@ struct DoubleType
 
     
 private:
-    double* doubleTypeHeap;
+    double* doubleTypeHeap = nullptr;
 };
 
 struct Point
