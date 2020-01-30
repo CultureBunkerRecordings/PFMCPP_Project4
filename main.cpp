@@ -170,13 +170,13 @@ Point& Point::multiply(FloatType& m)
 
 Point& Point::multiply(DoubleType& m)
 {
-    return multiplyInternal(m);
+    return multiplyInternal(m); FIXME cast correctly
 }
 
 void Point::toString()
 {
-    std::cout<<"x: "<< x << std::endl;
-    std::cout<<"y: "<< y << std::endl;
+    std::cout << "x: " << x << std::endl;
+    std::cout << "y: " << y << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -239,13 +239,13 @@ IntType& IntType::pow(const IntType& intRef)
 
 IntType& IntType::pow(const DoubleType& doubleRef)
 {
-    *intTypeHeap = powInternal(doubleRef);
+    *intTypeHeap = powInternal(doubleRef); FIXME cast correctly
     return *this;
 }
 
 int IntType::powInternal(int power)
 {
-    return std::pow(*intTypeHeap, power);
+    return std::pow(*intTypeHeap, power); FIXME cast correctly
 }
 
 /////////////////////////////////////////////////////
@@ -253,7 +253,7 @@ int IntType::powInternal(int power)
 
 IntType& IntType::pow(const FloatType& floatRef)
 {
-    *intTypeHeap = powInternal(floatRef);
+    *intTypeHeap = powInternal(floatRef); FIXME cast correctly
     return *this;
 }
 
@@ -311,7 +311,7 @@ FloatType& FloatType::pow(const FloatType& floatRef)
 
 FloatType& FloatType::pow(const DoubleType& doubleRef)
 {
-    *floatTypeHeap = powInternal(doubleRef);
+    *floatTypeHeap = powInternal(doubleRef); FIXME cast correctly
     return *this; 
 }
 
@@ -373,7 +373,7 @@ DoubleType& DoubleType::pow(const IntType& intRef)
 
 DoubleType& DoubleType::pow(const FloatType& floatRef)
 {
-    *doubleTypeHeap = powInternal(floatRef);
+    *doubleTypeHeap = powInternal(floatRef); FIXME cast correctly
     return *this;
 }
 
