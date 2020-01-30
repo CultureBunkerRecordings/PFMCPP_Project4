@@ -75,7 +75,7 @@ struct IntType
 {
     IntType(int);
     ~IntType();
-    operator int() const { return *intTypeHeap; } 
+    operator int() const { return *intTypeHeap; }
     IntType& add(int rhs );
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
@@ -113,6 +113,8 @@ struct DoubleType
     DoubleType(double);
     ~DoubleType();
     operator double() const { return *doubleTypeHeap; }
+    operator IntType() const {return *doubleTypeHeap; }
+    operator FloatType() const {return *doubleTypeHeap; }
     DoubleType& add(double rhs );
     DoubleType& subtract(double rhs );
     DoubleType& multiply(double rhs );
