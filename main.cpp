@@ -68,6 +68,11 @@ struct IntType
         *intTypeHeap /= other;
         return *this;
     }
+    IntType& operator=(const IntType other) 
+    {
+        *intTypeHeap = *other.intTypeHeap;
+        return *this;
+    }
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
     IntType& divide(int rhs );
@@ -396,8 +401,8 @@ int main()
     intNum /= floatNum;
     std::cout << "intNum: " << intNum << std::endl;
 
-    // intNum = 2 + (intNum2 - 4) + floatNum / 2.3;
-    // std::cout << "intNum: " << intNum << std::endl;
+    intNum = 2 + (intNum2 - 4) + floatNum / 2.3;
+     std::cout << "intNum: " << intNum << std::endl;
         
     return 0;
 }
