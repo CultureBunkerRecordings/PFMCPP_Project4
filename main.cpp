@@ -25,34 +25,7 @@ Project 4: Part 5 / 9
          add some in and fix the build errors that might result via the techniques you have learned in the previous weeks (hint: casting)
          i.e.
  */
-#if false
-namespace Example
-{
-    int main()
-    {
-        FloatType floatNum(4.3f);
-        IntType intNum(2);
-        IntType intNum2(6);
 
-        /* 
-        if you previously had a line like this demonstrating chaining:
-            
-            intNum.add(3).add(4.5f).divide(floatNum); 
-
-        it should become:
-        */
-        intNum += 3;
-        intNum += 4.5f;
-        intNum /= floatNum;
-        std::cout << "intNum: " << intNum << std::endl;
-
-        intNum = 2 + (intNum2 - 4) + floatNum / 2.3;
-        std::cout << "intNum: " << intNum << std::endl;
-        
-        return 0;
-    }
-}
-#endif
  /*
  6) compile/link/run to make sure you don't have any errors
  
@@ -80,7 +53,21 @@ struct IntType
     IntType(int);
     ~IntType();
     operator int() const { return *intTypeHeap; }
-    IntType& add(int rhs );
+    IntType& operator+=( const IntType other) 
+    {
+        *intTypeHeap += *other.intTypeHeap;
+        return *this;
+    }
+    IntType& operator+=( const float other) 
+    {
+        *intTypeHeap += other;
+        return *this;
+    }
+    IntType& operator/=( const float other) 
+    {
+        *intTypeHeap /= other;
+        return *this;
+    }
     IntType& subtract(int rhs );
     IntType& multiply(int rhs );
     IntType& divide(int rhs );
@@ -106,10 +93,12 @@ struct FloatType
     FloatType& pow(float power);
     FloatType& pow(const IntType& intRef);
     FloatType& pow(const FloatType& floatRef);
-    FloatType& pow(const DoubleType& doubleRef);    
+    FloatType& pow(const DoubleType& doubleRef);  
+    
 private:
-    float powInternal(float power);
     float* floatTypeHeap = nullptr;
+    float powInternal(float power);
+    
 };
 
 struct DoubleType 
@@ -170,7 +159,7 @@ Point& Point::multiply(FloatType& m)
 
 Point& Point::multiply(DoubleType& m)
 {
-    return multiplyInternal(m); FIXME cast correctly
+    return multiplyInternal(static_cast<float>(m));
 }
 
 void Point::toString()
@@ -191,11 +180,11 @@ IntType::~IntType()
     delete intTypeHeap;
 }
 
-IntType& IntType::add(int rhs)
-{
-    *intTypeHeap += rhs;
-    return *this;
-}
+// IntType& IntType::add(int rhs)
+// {
+//     *intTypeHeap += rhs;
+//     return *this;
+// }
 
 IntType& IntType::subtract(int rhs)
 {
@@ -239,13 +228,13 @@ IntType& IntType::pow(const IntType& intRef)
 
 IntType& IntType::pow(const DoubleType& doubleRef)
 {
-    *intTypeHeap = powInternal(doubleRef); FIXME cast correctly
+    *intTypeHeap = static_cast<int>(powInternal(doubleRef));
     return *this;
 }
 
 int IntType::powInternal(int power)
 {
-    return std::pow(*intTypeHeap, power); FIXME cast correctly
+    return static_cast<int> (std::pow(*intTypeHeap, power));
 }
 
 /////////////////////////////////////////////////////
@@ -253,7 +242,7 @@ int IntType::powInternal(int power)
 
 IntType& IntType::pow(const FloatType& floatRef)
 {
-    *intTypeHeap = powInternal(floatRef); FIXME cast correctly
+    *intTypeHeap = static_cast<int>(powInternal(floatRef));
     return *this;
 }
 
@@ -311,7 +300,7 @@ FloatType& FloatType::pow(const FloatType& floatRef)
 
 FloatType& FloatType::pow(const DoubleType& doubleRef)
 {
-    *floatTypeHeap = powInternal(doubleRef); FIXME cast correctly
+    *floatTypeHeap = static_cast<float>(powInternal(doubleRef)); //FIXME cast correctly
     return *this; 
 }
 
@@ -373,7 +362,7 @@ DoubleType& DoubleType::pow(const IntType& intRef)
 
 DoubleType& DoubleType::pow(const FloatType& floatRef)
 {
-    *doubleTypeHeap = powInternal(floatRef); FIXME cast correctly
+    *doubleTypeHeap = static_cast <double> (powInternal(floatRef));
     return *this;
 }
 
@@ -391,27 +380,24 @@ double DoubleType::powInternal(double power)
 
 int main()
 {
-    FloatType f(2.0f);
-    DoubleType d(2.0);
-    IntType i(2);
+    FloatType floatNum(4.3f);
+    IntType intNum(2);
+    IntType intNum2(6);
 
-    Point p(f);
+        /* 
+        if you previously had a line like this demonstrating chaining:
+            
+            intNum.add(3).add(4.5f).divide(floatNum); 
 
-    float fResult = f.pow(i).divide(4.6f);
+        it should become:
+        */
+    intNum += 3;
+    intNum += 4.5f;
+    intNum /= floatNum;
+    std::cout << "intNum: " << intNum << std::endl;
 
-    double dResult = d.multiply(4.4567).pow(f);
-
-    int iResult = i.add(10).pow(d); 
-
-    p.multiply(i).toString();
-
-    p.multiply(f).toString();
-
-    std::cout << "f by the power of  i and dividing by 4.6 results in: " << fResult << std::endl;
-
-    std::cout << "d times 4.4567 to the power of f results in: "<< dResult << std::endl;
-
-    std::cout << "Adding 10 to i to the power of d results in: "<< iResult << std::endl;
-
-    std::cout << "good to go!" << std::endl;
+    // intNum = 2 + (intNum2 - 4) + floatNum / 2.3;
+    // std::cout << "intNum: " << intNum << std::endl;
+        
+    return 0;
 }
