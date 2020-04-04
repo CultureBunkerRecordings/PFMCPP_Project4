@@ -16,8 +16,8 @@ Project 4: Part 5 / 9
  2) Your overloaded operators should only take primitives, passed by value.
  
  3) don't delete your conversion functions.
-         if you removed them in Chapter 4 Part 7, put them back in.
-         uncomment them if you commented them in Chapter 4 Part 7
+ if you removed them in Chapter 4 Part 7, put them back in.
+ uncomment them if you commented them in Chapter 4 Part 7
  
  4) your main() function should be the same as Chapter 4 Part 7
      
@@ -236,18 +236,18 @@ IntType& IntType::pow(const IntType& intRef)
 
 IntType& IntType::pow(const DoubleType& doubleRef)
 {
-    *intTypeHeap = powInternal(doubleRef);
+    *intTypeHeap = powInternal(static_cast<int>(doubleRef));
     return *this;
 }
 
 int IntType::powInternal(int power)
 {
-    return std::pow(*intTypeHeap, power);
+    return static_cast<int>(std::pow(*intTypeHeap, power));
 }
 
 IntType& IntType::pow(const FloatType& floatRef)
 {
-    *intTypeHeap = static_cast<int>(powInternal(floatRef));
+    *intTypeHeap = (powInternal(static_cast<int>(floatRef)));
     return *this;
 }
 
@@ -308,7 +308,7 @@ FloatType& FloatType::pow(const FloatType& floatRef)
 
 FloatType& FloatType::pow(const DoubleType& doubleRef)
 {
-    *floatTypeHeap = static_cast<float>(powInternal(doubleRef)); 
+    *floatTypeHeap = powInternal(static_cast<float>(doubleRef)); 
     return *this; 
 }
 
@@ -368,7 +368,7 @@ DoubleType& DoubleType::pow(const IntType& intRef)
 
 DoubleType& DoubleType::pow(const FloatType& floatRef)
 {
-    *doubleTypeHeap = static_cast <double> (powInternal(floatRef));
+    *doubleTypeHeap = powInternal(static_cast <double>(floatRef));
     return *this;
 }
 
@@ -380,7 +380,7 @@ DoubleType& DoubleType::pow(const DoubleType& doubleRef)
 
 double DoubleType::powInternal(double power)
 {
-    return std::pow(*doubleTypeHeap, power); 
+    return static_cast<double>(std::pow(*doubleTypeHeap, power)); 
 }
 
 //MAIN ///////////////////////////////////////////
@@ -400,11 +400,11 @@ int main()
     */
 
     intNum += 3;
-    intNum += 4.5f;
-    intNum /= floatNum;
+    intNum += static_cast<int>(4.5f);
+    intNum /= static_cast<int>(floatNum);
     std::cout << "intNum: " << intNum << std::endl;
 
-    intNum = 2 + (intNum2 - 4) + floatNum / 2.3;
+    intNum = static_cast<int>(2 + (intNum2 - 4) + floatNum / static_cast<float>(2.3));
      std::cout << "intNum: " << intNum << std::endl;
         
     return 0;
