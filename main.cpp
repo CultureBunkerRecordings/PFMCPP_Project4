@@ -101,6 +101,8 @@ struct FloatType
     FloatType& operator/=( const float other);
     FloatType& operator*=(const float other);
 
+    FloatType& operator=(const FloatType& other);
+
     FloatType& pow(float power);
     FloatType& pow(const IntType& intRef);
     FloatType& pow(const FloatType& floatRef);
@@ -124,6 +126,10 @@ struct DoubleType
     DoubleType& operator-=(const double other);
     DoubleType& operator/=( const double other);
     DoubleType& operator*=(const double other);
+
+    DoubleType& operator=(const DoubleType& other);
+
+
 
     const DoubleType& pow(double power);
     DoubleType& pow(const IntType& intRef);
@@ -288,6 +294,12 @@ FloatType& FloatType::operator*=(const float other)
     return *this;
 }
 
+FloatType& FloatType::operator=(const FloatType &other)
+{
+    *floatTypeHeap = *other.floatTypeHeap;
+    return *this;
+} 
+
 FloatType& FloatType::pow(float power)
 {
     powInternal(power);
@@ -354,6 +366,12 @@ DoubleType& DoubleType::operator*=(const double other)
     return *this;
 }
 
+DoubleType& DoubleType::operator=(const DoubleType &other)
+{
+    *doubleTypeHeap = *other.doubleTypeHeap;
+    return *this;
+} 
+
 const DoubleType& DoubleType::pow(double power)
 {
     *doubleTypeHeap = powInternal(power);
@@ -387,25 +405,27 @@ double DoubleType::powInternal(double power)
 
 int main()
 {
-    FloatType floatNum(4.3f);
-    IntType intNum(2);
-    IntType intNum2(6);
+    FloatType f(2.0f);
+    DoubleType d(2.0);
+    IntType i(2);
 
-    /* 
-    if you previously had a line like this demonstrating chaining:
-        
-        intNum.add(3).add(4.5f).divide(floatNum); 
+    Point p(f);
 
-    it should become:
-    */
+    f.pow(i) /= 4.6f;
 
-    intNum += 3;
-    intNum += static_cast<int>(4.5f);
-    intNum /= static_cast<int>(floatNum);
-    std::cout << "intNum: " << intNum << std::endl;
+    d.pow(f) *= 4.4567;
 
-    intNum = static_cast<int>(2 + (intNum2 - 4) + floatNum / static_cast<float>(2.3));
-     std::cout << "intNum: " << intNum << std::endl;
-        
-    return 0;
+    i.pow(d) += 10; 
+
+    p.multiply(i).toString();
+
+    p.multiply(f).toString();
+
+    std::cout << "f by the power of  i and dividing by 4.6 results in: " << f << std::endl;
+
+    std::cout << "d times 4.4567 to the power of f results in: "<< d << std::endl;
+
+    std::cout << "Adding 10 to i to the power of d results in: "<< i << std::endl;
+
+    std::cout << "good to go!" << std::endl;
 }
