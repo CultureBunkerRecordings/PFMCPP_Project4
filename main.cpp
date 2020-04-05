@@ -59,7 +59,6 @@ struct Point
     Point& multiply(DoubleType& m);
     void toString();
 private:
-    Point& multiplyInternal(float m); FIXME this is identical to what 'multiply(float)' used to be.  you gain nothing by adding this.  Make your other multiply functions call 'multiply(float)' and remove this extra function.
     float x{0}, y{0};
 };
 
@@ -76,8 +75,6 @@ struct IntType
     IntType& operator-=(const int other);
     IntType& operator/=( const int other);
     IntType& operator*=(const int other);
-
-    IntType& operator=(const IntType& other);
 
     IntType& pow(int power);
     IntType& pow(const IntType& intRef);
@@ -100,8 +97,6 @@ struct FloatType
     FloatType& operator-=(const float other);
     FloatType& operator/=( const float other);
     FloatType& operator*=(const float other);
-
-    FloatType& operator=(const FloatType& other); 
 
     FloatType& pow(float power);
     FloatType& pow(const IntType& intRef);
@@ -127,10 +122,6 @@ struct DoubleType
     DoubleType& operator/=( const double other);
     DoubleType& operator*=(const double other);
 
-    DoubleType& operator=(const DoubleType& other);
-
-
-
     const DoubleType& pow(double power);
     DoubleType& pow(const IntType& intRef);
     DoubleType& pow(const FloatType& floatRef);
@@ -146,29 +137,25 @@ private:
 
 Point& Point::multiply(float m)
 {
-    return multiplyInternal(m);
-}
-
-Point& Point::multiplyInternal(float m)
-{
     x *= m;
     y *= m;
     return *this;
 }
 
+
 Point& Point::multiply(IntType& m)
 {
-    return multiplyInternal(m);
+    return multiply(static_cast<float>(m));
 }
 
 Point& Point::multiply(FloatType& m)
 {
-    return multiplyInternal(m);
+    return multiply(static_cast<float>(m));
 }
 
 Point& Point::multiply(DoubleType& m)
 {
-    return multiplyInternal(static_cast<float>(m));
+    return multiply(static_cast<float>(m));
 }
 
 void Point::toString()
@@ -204,21 +191,7 @@ IntType& IntType::operator-=(const int other)
 
 IntType& IntType::operator/=( const int other) 
 {
-    if (other == 0)
-    {
-        std::cout << "error divide by zero" << std::endl;
-        *intTypeHeap = 0; 
-    } 
-    else 
-    { 
-        *intTypeHeap /= other;
-    }
-    return *this;
-}
-
-IntType& IntType::operator=(const IntType& other)
-{
-    *intTypeHeap = *other.intTypeHeap;
+    *intTypeHeap /= other;
     return *this;
 }
 
@@ -294,12 +267,6 @@ FloatType& FloatType::operator*=(const float other)
     return *this;
 }
 
-FloatType& FloatType::operator=(const FloatType &other)
-{
-    *floatTypeHeap = *other.floatTypeHeap;
-    return *this;
-} 
-
 FloatType& FloatType::pow(float power)
 {
     powInternal(power);
@@ -365,12 +332,6 @@ DoubleType& DoubleType::operator*=(const double other)
     *doubleTypeHeap *= other;
     return *this;
 }
-
-DoubleType& DoubleType::operator=(const DoubleType &other)
-{
-    *doubleTypeHeap = *other.doubleTypeHeap;
-    return *this;
-} 
 
 const DoubleType& DoubleType::pow(double power)
 {
