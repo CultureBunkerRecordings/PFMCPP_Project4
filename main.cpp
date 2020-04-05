@@ -378,6 +378,8 @@ int main()
 
     i.pow(d) += 10; 
 
+    i /= 0;
+
     p.multiply(i).toString();
 
     p.multiply(f).toString();
