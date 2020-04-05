@@ -191,7 +191,14 @@ IntType& IntType::operator-=(const int other)
 
 IntType& IntType::operator/=( const int other) 
 {
-    *intTypeHeap /= other;
+    if (other == 0)
+    {
+        std::cout << "error divide by zero" << std::endl; 
+    } 
+    else 
+    { 
+        *intTypeHeap /= other;
+    }
     return *this;
 }
 
