@@ -59,7 +59,7 @@ struct Point
     Point& multiply(DoubleType& m);
     void toString();
 private:
-    Point& multiplyInternal(float m);
+    Point& multiplyInternal(float m); FIXME this is identical to what 'multiply(float)' used to be.  you gain nothing by adding this.  Make your other multiply functions call 'multiply(float)' and remove this extra function.
     float x{0}, y{0};
 };
 
@@ -101,7 +101,7 @@ struct FloatType
     FloatType& operator/=( const float other);
     FloatType& operator*=(const float other);
 
-    FloatType& operator=(const FloatType& other);
+    FloatType& operator=(const FloatType& other); 
 
     FloatType& pow(float power);
     FloatType& pow(const IntType& intRef);
