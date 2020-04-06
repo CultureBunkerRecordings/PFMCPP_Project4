@@ -89,12 +89,12 @@ struct IntType
     ~IntType();
     operator int() const { return *intTypeHeap; }
     
-    IntType& operator+=( const int other);
+    IntType& operator+=(const int other);
     IntType& operator-=(const int other);
-    IntType& operator/=( const int other);
+    IntType& operator/=(const int other);
     IntType& operator*=(const int other);
 
-    IntType& apply(std::function<IntType& (int&)> intFunc);
+    IntType& apply(std::function<IntType&(int&)> intFunc);
     IntType& apply(void(*intFunc)(int&));
 
     IntType& pow(int power);
@@ -114,9 +114,9 @@ struct FloatType
     ~FloatType();
     operator float() const { return *floatTypeHeap; }
 
-    FloatType& operator+=( const float other);
+    FloatType& operator+=(const float other);
     FloatType& operator-=(const float other);
-    FloatType& operator/=( const float other);
+    FloatType& operator/=(const float other);
     FloatType& operator*=(const float other);
 
     FloatType& apply(std::function<FloatType&(float&)> floatFunc);
@@ -141,12 +141,12 @@ struct DoubleType
     ~DoubleType();
     operator double() const { return *doubleTypeHeap; }
 
-    DoubleType& operator+=( const double other);
+    DoubleType& operator+=(const double other);
     DoubleType& operator-=(const double other);
-    DoubleType& operator/=( const double other);
+    DoubleType& operator/=(const double other);
     DoubleType& operator*=(const double other);
 
-    DoubleType& apply(std::function<DoubleType& (double&)>);
+    DoubleType& apply(std::function<DoubleType&(double&)>);
     DoubleType& apply(void(*)(double&));
 
     const DoubleType& pow(double power);
@@ -238,14 +238,18 @@ IntType& IntType::operator*=(const int other)
 IntType& IntType::apply(std::function<IntType&(int&)> intFunc)
 {
     if(intFunc)
-    intFunc(*intTypeHeap);
+    {
+        intFunc(*intTypeHeap);
+    }
     return *this;
 }
 
-IntType& IntType::apply(void(*intFunc) (int&))
+IntType& IntType::apply(void(*intFunc)(int&))
 {
     if(intFunc)
-    intFunc(*intTypeHeap);
+    {
+        intFunc(*intTypeHeap);
+    }
     return *this;
 }
 
@@ -318,15 +322,19 @@ FloatType& FloatType::operator*=(const float other)
 FloatType& FloatType::apply(std::function<FloatType&(float&)> floatFunc)
 {
     if(floatFunc)
-    floatFunc(*floatTypeHeap);
+    {
+        floatFunc(*floatTypeHeap);
+    }
     return *this;
 }
 
-FloatType& FloatType::apply(void(*floatFunc) (float&))
+FloatType& FloatType::apply(void(*floatFunc)(float&))
 {
     if(floatFunc)
-    floatFunc(*floatTypeHeap);
-    return *this; 
+    {
+        floatFunc(*floatTypeHeap);
+    }
+    return *this;
 }
 
 FloatType& FloatType::pow(float power)
@@ -398,15 +406,19 @@ DoubleType& DoubleType::operator*=(const double other)
 DoubleType& DoubleType::apply(std::function<DoubleType&(double&)> doubleFunc)
 {
     if(doubleFunc)
-    doubleFunc(*doubleTypeHeap);
+    {
+        doubleFunc(*doubleTypeHeap);
+    }
     return *this;
 }
 
-DoubleType& DoubleType::apply(void(*doubleFunc) (double&))
+DoubleType& DoubleType::apply(void(*doubleFunc)(double&))
 {
     if(doubleFunc)
-    doubleFunc(*doubleTypeHeap);
-    return *this; 
+    {
+        doubleFunc(*doubleTypeHeap);
+    }
+    return *this;
 }
 
 const DoubleType& DoubleType::pow(double power)
