@@ -503,7 +503,8 @@ int main()
 
     std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
 
-    i.apply([](int& intHeap){ intHeap += 10; });
+    i.apply([&](int& intHeap) -> IntType& { intHeap += 10;
+    return i; });
 
     std::cout << "Plus 10 to i using a lambda = " << i << std::endl;
 
@@ -511,7 +512,8 @@ int main()
 
     std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
 
-    f.apply([](float& floatHeap){ floatHeap += 10; });
+    f.apply([&](float& floatHeap) -> FloatType& { floatHeap += 10;
+    return f; });
 
     std::cout << "Plus 10 to f using a lambda = " << f << std::endl;
 
@@ -519,7 +521,8 @@ int main()
 
     std::cout << "Plus 10 to d using a function pointer = " << d << std::endl;
 
-    d.apply([](double& doubleHeap){ doubleHeap += 10.0; });
+    d.apply([&](double& doubleHeap) -> DoubleType& { doubleHeap += 10.0; 
+    return d; });
 
     std::cout << "Plus 10 to d using a lambda = " << d << std::endl;
 
