@@ -239,7 +239,7 @@ IntType& IntType::apply(std::function<IntType&(int&)> intFunc)
 {
     if(intFunc)
     {
-        intFunc(*intTypeHeap);
+        return intFunc(*intTypeHeap);
     }
     return *this;
 }
@@ -323,7 +323,7 @@ FloatType& FloatType::apply(std::function<FloatType&(float&)> floatFunc)
 {
     if(floatFunc)
     {
-        floatFunc(*floatTypeHeap);
+        return floatFunc(*floatTypeHeap);
     }
     return *this;
 }
@@ -407,7 +407,7 @@ DoubleType& DoubleType::apply(std::function<DoubleType&(double&)> doubleFunc)
 {
     if(doubleFunc)
     {
-        doubleFunc(*doubleTypeHeap);
+        return doubleFunc(*doubleTypeHeap);
     }
     return *this;
 }
@@ -503,7 +503,7 @@ int main()
 
     std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
 
-    i.apply([&](int& intHeap) -> IntType& { intHeap += 10;
+    i.apply([&i](int& intHeap) -> IntType& { intHeap += 10;
     return i; });
 
     std::cout << "Plus 10 to i using a lambda = " << i << std::endl;
@@ -512,7 +512,7 @@ int main()
 
     std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
 
-    f.apply([&](float& floatHeap) -> FloatType& { floatHeap += 10;
+    f.apply([&f](float& floatHeap) -> FloatType& { floatHeap += 10;
     return f; });
 
     std::cout << "Plus 10 to f using a lambda = " << f << std::endl;
@@ -521,7 +521,7 @@ int main()
 
     std::cout << "Plus 10 to d using a function pointer = " << d << std::endl;
 
-    d.apply([&](double& doubleHeap) -> DoubleType& { doubleHeap += 10.0; 
+    d.apply([&d](double& doubleHeap) -> DoubleType& { doubleHeap += 10.0; 
     return d; });
 
     std::cout << "Plus 10 to d using a lambda = " << d << std::endl;
