@@ -57,6 +57,7 @@ send me a DM to check your pull request
 //#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
 #include <iostream>
 #include <cmath>
+#include <functional>
 
 //forward declare
 
@@ -93,6 +94,9 @@ struct IntType
     IntType& operator/=( const int other);
     IntType& operator*=(const int other);
 
+    IntType& apply(std::function<IntType& (int&)> intFunc);
+    IntType& apply(void(*intFunc)(int&));
+
     IntType& pow(int power);
     IntType& pow(const IntType& intRef);
     IntType& pow(const FloatType& floatRef);
@@ -114,6 +118,9 @@ struct FloatType
     FloatType& operator-=(const float other);
     FloatType& operator/=( const float other);
     FloatType& operator*=(const float other);
+
+    FloatType& apply(std::function<FloatType&>(float&));
+    FloatType& apply(void(*)(float&));
 
     FloatType& pow(float power);
     FloatType& pow(const IntType& intRef);
@@ -138,6 +145,9 @@ struct DoubleType
     DoubleType& operator-=(const double other);
     DoubleType& operator/=( const double other);
     DoubleType& operator*=(const double other);
+
+    DoubleType& apply(std::function<DoubleType&>(double&));
+    DoubleType& apply(void(*)(double&));
 
     const DoubleType& pow(double power);
     DoubleType& pow(const IntType& intRef);
@@ -222,6 +232,20 @@ IntType& IntType::operator/=( const int other)
 IntType& IntType::operator*=(const int other) 
 {
     *intTypeHeap *= other;
+    return *this;
+}
+
+IntType& IntType::apply(std::function<IntType&(int&)> intFunc)
+{
+    if(intFunc)
+    intFunc(*intTypeHeap);
+    return *this;
+}
+
+IntType& IntType::apply(void(*intFunc) (int&))
+{
+    if(intFunc)
+    intFunc(*intTypeHeap);
     return *this;
 }
 
@@ -386,6 +410,14 @@ double DoubleType::powInternal(double power)
     return static_cast<double>(std::pow(*doubleTypeHeap, power)); 
 }
 
+//Free funcs ///////////////////////////////////////////
+
+void plusTen(int& intHeap)
+{
+    intHeap += 10;
+}
+
+
 //MAIN ///////////////////////////////////////////
 
 int main()
@@ -412,7 +444,11 @@ int main()
 
     std::cout << "d times 4.4567 to the power of f results in: "<< d << std::endl;
 
-    std::cout << "Adding 10 to i to the power of d results in: "<< i << std::endl;
+    std::cout << "Adding 10 to i to the power of d results in: " << i << std::endl;
+
+    i.apply(plusTen);
+
+    std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
 
     std::cout << "good to go!" << std::endl;
 }
