@@ -57,6 +57,7 @@ send me a DM to check your pull request
 //#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
 #include <iostream>
 #include <cmath>
+#include <functional>
 
 //forward declare
 
@@ -88,10 +89,13 @@ struct IntType
     ~IntType();
     operator int() const { return *intTypeHeap; }
     
-    IntType& operator+=( const int other);
+    IntType& operator+=(const int other);
     IntType& operator-=(const int other);
-    IntType& operator/=( const int other);
+    IntType& operator/=(const int other);
     IntType& operator*=(const int other);
+
+    IntType& apply(std::function<IntType&(int&)> intFunc);
+    IntType& apply(void(*intFunc)(int&));
 
     IntType& pow(int power);
     IntType& pow(const IntType& intRef);
@@ -110,10 +114,13 @@ struct FloatType
     ~FloatType();
     operator float() const { return *floatTypeHeap; }
 
-    FloatType& operator+=( const float other);
+    FloatType& operator+=(const float other);
     FloatType& operator-=(const float other);
-    FloatType& operator/=( const float other);
+    FloatType& operator/=(const float other);
     FloatType& operator*=(const float other);
+
+    FloatType& apply(std::function<FloatType&(float&)> floatFunc);
+    FloatType& apply(void(*)(float&));
 
     FloatType& pow(float power);
     FloatType& pow(const IntType& intRef);
@@ -134,10 +141,13 @@ struct DoubleType
     ~DoubleType();
     operator double() const { return *doubleTypeHeap; }
 
-    DoubleType& operator+=( const double other);
+    DoubleType& operator+=(const double other);
     DoubleType& operator-=(const double other);
-    DoubleType& operator/=( const double other);
+    DoubleType& operator/=(const double other);
     DoubleType& operator*=(const double other);
+
+    DoubleType& apply(std::function<DoubleType&(double&)>);
+    DoubleType& apply(void(*)(double&));
 
     const DoubleType& pow(double power);
     DoubleType& pow(const IntType& intRef);
@@ -225,6 +235,24 @@ IntType& IntType::operator*=(const int other)
     return *this;
 }
 
+IntType& IntType::apply(std::function<IntType&(int&)> intFunc)
+{
+    if(intFunc)
+    {
+        return intFunc(*intTypeHeap);
+    }
+    return *this;
+}
+
+IntType& IntType::apply(void(*intFunc)(int&))
+{
+    if(intFunc)
+    {
+        intFunc(*intTypeHeap);
+    }
+    return *this;
+}
+
 IntType& IntType::pow(int power)
 {
     *intTypeHeap = powInternal(power);
@@ -288,6 +316,24 @@ FloatType& FloatType::operator/=( const float other)
 FloatType& FloatType::operator*=(const float other) 
 {
     *floatTypeHeap *= other;
+    return *this;
+}
+
+FloatType& FloatType::apply(std::function<FloatType&(float&)> floatFunc)
+{
+    if(floatFunc)
+    {
+        return floatFunc(*floatTypeHeap);
+    }
+    return *this;
+}
+
+FloatType& FloatType::apply(void(*floatFunc)(float&))
+{
+    if(floatFunc)
+    {
+        floatFunc(*floatTypeHeap);
+    }
     return *this;
 }
 
@@ -357,6 +403,24 @@ DoubleType& DoubleType::operator*=(const double other)
     return *this;
 }
 
+DoubleType& DoubleType::apply(std::function<DoubleType&(double&)> doubleFunc)
+{
+    if(doubleFunc)
+    {
+        return doubleFunc(*doubleTypeHeap);
+    }
+    return *this;
+}
+
+DoubleType& DoubleType::apply(void(*doubleFunc)(double&))
+{
+    if(doubleFunc)
+    {
+        doubleFunc(*doubleTypeHeap);
+    }
+    return *this;
+}
+
 const DoubleType& DoubleType::pow(double power)
 {
     *doubleTypeHeap = powInternal(power);
@@ -386,6 +450,23 @@ double DoubleType::powInternal(double power)
     return static_cast<double>(std::pow(*doubleTypeHeap, power)); 
 }
 
+//Free funcs ///////////////////////////////////////////
+
+void plusTen(int& intHeap)
+{
+    intHeap += 10;
+}
+
+void plusTen(float& floatHeap)
+{
+    floatHeap += 10.0f;
+}
+
+void plusTen(double& doubleHeap)
+{
+    doubleHeap += 10.0;
+}
+
 //MAIN ///////////////////////////////////////////
 
 int main()
@@ -393,6 +474,10 @@ int main()
     FloatType f(2.0f);
     DoubleType d(2.0);
     IntType i(2);
+
+    std::cout << "i = " << i << std::endl;
+    std::cout << "f = " << f << std::endl;
+    std::cout << "d = " << d << std::endl;
 
     Point p(f);
 
@@ -408,11 +493,47 @@ int main()
 
     p.multiply(f).toString();
 
-    std::cout << "f by the power of  i and dividing by 4.6 results in: " << f << std::endl;
+    std::cout << "f by the power of  i and dividing by 4.6.. f: " << f << std::endl;
 
-    std::cout << "d times 4.4567 to the power of f results in: "<< d << std::endl;
+    std::cout << "d times 4.4567 to the power of f.. d:  "<< d << std::endl;
 
-    std::cout << "Adding 10 to i to the power of d results in: "<< i << std::endl;
+    std::cout << "Adding 10 to i to the power of d.. i: " << i << std::endl;
+
+    i.apply(plusTen);
+
+    std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
+
+    i.apply([&i](int& intHeap) -> IntType& 
+    { 
+        intHeap += 10;
+        return i; 
+    });
+
+    std::cout << "Plus 10 to i using a lambda = " << i << std::endl;
+
+    f.apply(plusTen);
+
+    std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
+
+    f.apply([&f](float& floatHeap) -> FloatType& 
+    {
+        floatHeap += 10;
+        return f; 
+    });
+
+    std::cout << "Plus 10 to f using a lambda = " << f << std::endl;
+
+    d.apply(plusTen);
+
+    std::cout << "Plus 10 to d using a function pointer = " << d << std::endl;
+
+    d.apply([&d](double& doubleHeap) -> DoubleType& 
+    {
+        doubleHeap += 10.0; 
+        return d; 
+    });
+
+    std::cout << "Plus 10 to d using a lambda = " << d << std::endl;
 
     std::cout << "good to go!" << std::endl;
 }
