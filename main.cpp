@@ -112,51 +112,51 @@ struct Numeric
 
     Numeric& operator+=(const myType other)
     {
-    *numericHeap += other;
-    return *this;
+        *numericHeap += other;
+        return *this;
     }
 
     Numeric& operator-=(const myType other)
     {
-    *numericHeap -= other;
-    return *this;
+        *numericHeap -= other;
+        return *this;
     }
 
     Numeric& operator/=(const myType other)
     {
-    if (other == 0)
-        {
-            std::cout << "error divide by zero" << std::endl; 
-        } 
-    else 
-        { 
-            *numericHeap /= other;
-        }
-    return *this;
+        if (other == 0)
+            {
+                std::cout << "error divide by zero" << std::endl; 
+            } 
+        else 
+            { 
+                *numericHeap /= other;
+            }
+        return *this;
     }
 
     Numeric& operator*=(const myType other)
     {
-    *numericHeap *= other;
-    return *this;
+        *numericHeap *= other;
+        return *this;
     }
 
     Numeric& apply(std::function<Numeric&(myType&)> numericFunc)
     {
-    if(numericFunc)
-    {
-        return numericFunc(*numericHeap);
-    }
-    return *this;
+        if(numericFunc)
+        {
+            return numericFunc(*numericHeap);
+        }
+        return *this;
     }
 
     Numeric& apply(void(*numericFunc)(myType&))
     {
-    if(numericFunc)
-    {
-        numericFunc(*numericHeap);
-    }
-    return *this;
+        if(numericFunc)
+        {
+            numericFunc(*numericHeap);
+        }
+        return *this;
     }
 
     Numeric& pow(myType power)
