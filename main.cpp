@@ -89,6 +89,7 @@ If you need to view an example, see: https://bitbucket.org/MatkatMusic/pfmcpptas
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include <memory>
 
 //forward declare
 
@@ -135,7 +136,7 @@ struct IntType
     
 private:
     int powInternal(int power);
-    int* intTypeHeap = nullptr;
+    std::unique_ptr<int> intTypeHeap = nullptr;
 }; 
 
 //FloatType definition ///////////////////////////////////////////
@@ -159,7 +160,7 @@ struct FloatType
     FloatType& pow(const DoubleType& doubleRef);  
     
 private:
-    float* floatTypeHeap = nullptr;
+    std::unique_ptr<float> floatTypeHeap = nullptr;
     float powInternal(float power);
     
 };
@@ -187,7 +188,7 @@ struct DoubleType
     
 private:
     double powInternal(double power);
-    double* doubleTypeHeap = nullptr;
+    std::unique_ptr<double> doubleTypeHeap = nullptr;
 };
 
 
@@ -225,14 +226,13 @@ void Point::toString()
 //IntType Implementation /////////////////////////////////////////
 
 
-IntType::IntType(int intValue)
+IntType::IntType(int intValue): intTypeHeap(std::make_unique<int>(intValue))
 {
-    intTypeHeap = new int(intValue);
 }
 
 IntType::~IntType()
 {
-    delete intTypeHeap;
+
 }
 
 IntType& IntType::operator+=( const int other) 
@@ -316,14 +316,12 @@ IntType& IntType::pow(const FloatType& floatRef)
 //FloatType Implementation //////////////////////////////////////
 
 
-FloatType::FloatType(float floatValue)
+FloatType::FloatType(float floatValue): floatTypeHeap(std::make_unique<float>(floatValue))
 {
-    floatTypeHeap = new float(floatValue);
 }
 
 FloatType::~FloatType()
 {
-    delete floatTypeHeap;
 }
 
 FloatType& FloatType::operator+=( const float other) 
@@ -400,14 +398,12 @@ float FloatType::powInternal(float power)
 //DoubleType Implementation //////////////////////////////////////
 
 
-DoubleType::DoubleType(double doubleValue)
+DoubleType::DoubleType(double doubleValue): doubleTypeHeap(std::make_unique<double>(doubleValue))
 {
-    doubleTypeHeap = new double(doubleValue);
 }
 
 DoubleType::~DoubleType()
 {
-    delete doubleTypeHeap;
 }
 
 DoubleType& DoubleType::operator+=( const double other) 
