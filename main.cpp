@@ -101,28 +101,28 @@ If you need to view an example, see: https://bitbucket.org/MatkatMusic/pfmcpptas
 template<typename T>
 struct Numeric
 {
-    using myType = T;
-    Numeric(myType value): numericHeap(std::make_unique<myType>(value)){};
+    using MyType = T;
+    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){};
     ~Numeric() = default;
     
-    operator myType () const 
+    operator MyType() const 
     {
         return *numericHeap;
     }
 
-    Numeric& operator+=(const myType other)
+    Numeric& operator+=(const MyType other)
     {
         *numericHeap += other;
         return *this;
     }
 
-    Numeric& operator-=(const myType other)
+    Numeric& operator-=(const MyType other)
     {
         *numericHeap -= other;
         return *this;
     }
 
-    Numeric& operator/=(const myType other)
+    Numeric& operator/=(const MyType other)
     {
         if (other == 0)
             {
@@ -135,31 +135,29 @@ struct Numeric
         return *this;
     }
 
-    Numeric& operator*=(const myType other)
+    Numeric& operator*=(const MyType other)
     {
         *numericHeap *= other;
         return *this;
     }
+    template<typename X>
+    Numeric& apply(X numericFunc)
+    {
+        numericFunc(numericHeap);
+        return *this;
+    }
 
-    Numeric& apply(std::function<Numeric&(myType&)> numericFunc)
+    
+    Numeric& apply(void(*numericFunc)(std::unique_ptr<MyType>&))
     {
         if(numericFunc)
         {
-            return numericFunc(*numericHeap);
+            numericFunc(numericHeap);
         }
         return *this;
     }
 
-    Numeric& apply(void(*numericFunc)(myType&))
-    {
-        if(numericFunc)
-        {
-            numericFunc(*numericHeap);
-        }
-        return *this;
-    }
-
-    Numeric& pow(myType power)
+    Numeric& pow(MyType power)
     {
         *numericHeap = powInternal(power);
         return *this;
@@ -167,17 +165,17 @@ struct Numeric
 
     Numeric& pow(const Numeric& doubleRef)
     {
-        *numericHeap = (powInternal(static_cast<myType>(doubleRef)));
+        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
         return *this;
     }
 
 private:
-    myType powInternal(myType power)
+    MyType powInternal(MyType power)
     {
-        return static_cast<myType>(std::pow(*numericHeap, power));
+        return static_cast<MyType>(std::pow(*numericHeap, power));
     }
     
-    std::unique_ptr<myType> numericHeap = nullptr;
+    std::unique_ptr<MyType> numericHeap = nullptr;
 }; 
 
 //Point definition ///////////////////////////////////////////
@@ -215,20 +213,10 @@ void Point::toString()
 }
 
 //Free funcs ///////////////////////////////////////////
-
-void plusTen(int& intHeap)
+template <typename T>
+void plusTen(std::unique_ptr<T>& heap)
 {
-    intHeap += 10;
-}
-
-void plusTen(float& floatHeap)
-{
-    floatHeap += 10.0f;
-}
-
-void plusTen(double& doubleHeap)
-{
-    doubleHeap += 10.0;
+    *heap += 10;
 }
 
 //MAIN ///////////////////////////////////////////
@@ -267,9 +255,13 @@ int main()
 
     std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
 
-    i.apply([&i](int& intHeap) -> Numeric<int>& 
+    using IntType = decltype(i);
+    using FloatType = decltype(f);
+    using DoubleType = decltype(d);
+
+    i.apply([&i](std::unique_ptr<IntType::MyType>& IntHeap) -> IntType& 
     { 
-        intHeap += 10;
+        *IntHeap += 10;
         return i; 
     });
 
@@ -279,9 +271,9 @@ int main()
 
     std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
 
-    f.apply([&f](float& floatHeap) -> Numeric<float>& 
+    f.apply([&f](std::unique_ptr<FloatType::MyType>& FloatHeap) -> FloatType& 
     {
-        floatHeap += 10;
+        *FloatHeap += 10;
         return f; 
     });
 
@@ -291,9 +283,9 @@ int main()
 
     std::cout << "Plus 10 to d using a function pointer = " << d << std::endl;
 
-    d.apply([&d](double& doubleHeap) -> Numeric<double>& 
+    d.apply([&d](std::unique_ptr<DoubleType::MyType>& doubleHeap) -> DoubleType& 
     {
-        doubleHeap += 10.0; 
+        *doubleHeap += 10.0; 
         return d; 
     });
 
