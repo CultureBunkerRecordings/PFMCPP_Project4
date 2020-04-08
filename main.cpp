@@ -150,10 +150,7 @@ struct Numeric
     
     Numeric& apply(void(*numericFunc)(std::unique_ptr<MyType>&))
     {
-        if(numericFunc)
-        {
-            numericFunc(numericHeap);
-        }
+        numericFunc(numericHeap);
         return *this;
     }
 
