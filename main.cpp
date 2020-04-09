@@ -124,14 +124,33 @@ struct Numeric
 
     Numeric& operator/=(const MyType other)
     {
-        if (other == 0.0f)
+        // if your template type is an int
+        // if your parameter's type is also an int
+        //                 if your parameter is 0
+        //                         don't do the division
+        //         else if it's less than epsilon
+        //                 dont do the divison
+        // else if it's less than epsilon
+        //         warn about doing the division
+        if(std::is_same<int, MyType>::value)
+        {
+            if(std::is_same<decltype(other), int>::value)
             {
-                std::cout << "error divide by zero" << std::endl; 
+                if(other == 0.f)
+                {
+                    return *this;
+                }
+                else if(std::numeric_limits<MyType>::is_integer)
+                {
+                    return *this;
+                }
+                else
+                {
+                    std::cout<<"Warning division by zero";
+                }
+
             } 
-        else 
-            { 
-                *numericHeap /= other;
-            }
+        } 
         return *this;
     }
 
@@ -201,14 +220,7 @@ struct Numeric<double>
 
     Numeric& operator/=(const MyType other)
     {
-        if (other == 0.0)
-            {
-                std::cout << "error divide by zero" << std::endl; 
-            } 
-        else 
-            { 
-                *numericHeap /= other;
-            }
+        *numericHeap /= other;
         return *this;
     }
 
