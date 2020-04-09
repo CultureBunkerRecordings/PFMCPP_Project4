@@ -175,6 +175,76 @@ private:
     std::unique_ptr<MyType> numericHeap = nullptr;
 }; 
 
+template<>
+struct Numeric<double>
+{
+    using MyType = double;
+    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){}
+    ~Numeric() = default;
+    
+    operator MyType() const 
+    {
+        return *numericHeap;
+    }
+
+    Numeric& operator+=(const MyType other)
+    {
+        *numericHeap += other;
+        return *this;
+    }
+
+    Numeric& operator-=(const MyType other)
+    {
+        *numericHeap -= other;
+        return *this;
+    }
+
+    Numeric& operator/=(const MyType other)
+    {
+        if (other == 0.0)
+            {
+                std::cout << "error divide by zero" << std::endl; 
+            } 
+        else 
+            { 
+                *numericHeap /= other;
+            }
+        return *this;
+    }
+
+    Numeric& operator*=(const MyType other)
+    {
+        *numericHeap *= other;
+        return *this;
+    }
+    template<typename X>
+    Numeric& apply(X numericFunc)
+    {
+        numericFunc(numericHeap);
+        return *this;
+    }
+
+    Numeric& pow(MyType power)
+    {
+        *numericHeap = powInternal(power);
+        return *this;
+    }
+
+    Numeric& pow(const Numeric& doubleRef)
+    {
+        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
+        return *this;
+    }
+
+private:
+    MyType powInternal(MyType power)
+    {
+        return static_cast<MyType>(std::pow(*numericHeap, power));
+    }
+    
+    std::unique_ptr<MyType> numericHeap = nullptr;
+}; 
+
 //Point definition ///////////////////////////////////////////
 
 struct Point
@@ -275,10 +345,6 @@ int main()
     });
 
     std::cout << "Plus 10 to f using a lambda = " << f << std::endl;
-
-    d.apply(plusTen);
-
-    std::cout << "Plus 10 to d using a function pointer = " << d << std::endl;
 
     d.apply([&d](std::unique_ptr<DoubleType::MyType>& doubleHeap) -> DoubleType& 
     {
