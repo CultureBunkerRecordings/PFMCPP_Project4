@@ -102,7 +102,7 @@ template<typename T>
 struct Numeric
 {
     using MyType = T;
-    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){};
+    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){}
     ~Numeric() = default;
     
     operator MyType() const 
@@ -124,7 +124,7 @@ struct Numeric
 
     Numeric& operator/=(const MyType other)
     {
-        if (other == 0)
+        if (other == 0.0f)
             {
                 std::cout << "error divide by zero" << std::endl; 
             } 
@@ -232,9 +232,9 @@ int main()
 
     f.pow(i) /= 4.6f;
 
-    d.pow(f) *= 4.4567;
+    d.pow(static_cast<double>(f)) *= 4.4567;
 
-    i.pow(d) += 10; 
+    i.pow(static_cast<int>(d)) += 10; 
 
     i /= 0;
 
@@ -244,9 +244,9 @@ int main()
 
     std::cout << "f by the power of  i and dividing by 4.6.. f: " << f << std::endl;
 
-    std::cout << "d times 4.4567 to the power of f.. d:  "<< d << std::endl;
+    std::cout << "d to the power of f times 4.4567.. d:  "<< d << std::endl;
 
-    std::cout << "Adding 10 to i to the power of d.. i: " << i << std::endl;
+    std::cout << "i to the power of d plus 10.. i: " << i << std::endl;
 
     i.apply(plusTen);
 
