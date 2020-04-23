@@ -135,16 +135,16 @@ struct Numeric
         //                 dont do the divison
         // else if it's less than epsilon
         //        warn about doing the division
-        if(std::is_same<int, MyType>::value)
+        if constexpr(std::is_same<int, MyType>::value)
         {
-            if(std::is_same<decltype(other), int>::value)
+            if constexpr(std::is_same<decltype(other), int>::value)
             {
-                if(other == 0)
+                if (other == 0)
                 {
                     return *this;
                 }
             }
-            else if(std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+            else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
             {
                 return *this;
             }
