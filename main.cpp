@@ -167,7 +167,7 @@ struct Numeric
     {
         if(numericFunc)
         {
-            return numericFunc(*numericHeap);
+            return numericFunc(numericHeap);
         }
         return *this;
     }
@@ -175,6 +175,7 @@ struct Numeric
     
     Numeric& apply(void(*numericFunc)(std::unique_ptr<MyType>&))
     {
+        if (numericFunc != nullptr)
         numericFunc(numericHeap);
         return *this;
     }
