@@ -102,7 +102,9 @@ template<typename T>
 struct Numeric
 {
     using MyType = T;
-    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){}
+    
+    Numeric(MyType value): numericHeap(new MyType(value)){}
+    
     ~Numeric() = default;
     
     operator MyType() const 
@@ -124,33 +126,34 @@ struct Numeric
 
     Numeric& operator/=(const MyType other)
     {
+        // - in plain-english, you'll need to implement logic like this:
         // if your template type is an int
-        // if your parameter's type is also an int
+        //         if your parameter's type is also an int
         //                 if your parameter is 0
         //                         don't do the division
         //         else if it's less than epsilon
         //                 dont do the divison
         // else if it's less than epsilon
-        //         warn about doing the division
+        //        warn about doing the division
         if(std::is_same<int, MyType>::value)
         {
             if(std::is_same<decltype(other), int>::value)
             {
-                if(other == 0.f)
+                if(other == 0)
                 {
                     return *this;
                 }
-                else if(std::numeric_limits<MyType>::is_integer)
-                {
-                    return *this;
-                }
-                else
-                {
-                    std::cout<<"Warning division by zero";
-                }
-
-            } 
-        } 
+            }
+            else if(std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+            {
+                return *this;
+            }
+        }
+        else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+        {
+            std::cout<<"Warning division by zero";
+        }
+        *numericHeap /= other; 
         return *this;
     }
 
@@ -159,10 +162,13 @@ struct Numeric
         *numericHeap *= other;
         return *this;
     }
-    template<typename X>
-    Numeric& apply(X numericFunc)
+    
+    Numeric& apply(std::function<Numeric&(std::unique_ptr<MyType>&)> numericFunc)
     {
-        numericFunc(numericHeap);
+        if(numericFunc)
+        {
+            return numericFunc(*numericHeap);
+        }
         return *this;
     }
 
@@ -263,8 +269,8 @@ struct Point
 {
     Point(float xy) : Point(xy, xy) { }  //This calls the constructor below.
     Point(float _x, float _y) : x(_x), y(_y) { }
+    operator float() const { return x * y; }
     Point& multiply(float m);
-    Point& multiply(Numeric<float>& m);
     void toString();
 private:
     float x{0}, y{0};
@@ -277,12 +283,6 @@ Point& Point::multiply(float m)
     x *= m;
     y *= m;
     return *this;
-}
-
-
-Point& Point::multiply(Numeric<float>& m)
-{
-    return multiply(static_cast<float>(m));
 }
 
 void Point::toString()
@@ -338,7 +338,7 @@ int main()
     using FloatType = decltype(f);
     using DoubleType = decltype(d);
 
-    i.apply([&i](std::unique_ptr<IntType::MyType>& IntHeap) -> IntType& 
+    i.apply([&i](std::unique_ptr<IntType::MyType> &IntHeap) -> IntType& 
     { 
         *IntHeap += 10;
         return i; 
@@ -350,7 +350,7 @@ int main()
 
     std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
 
-    f.apply([&f](std::unique_ptr<FloatType::MyType>& FloatHeap) -> FloatType& 
+    f.apply([&f](std::unique_ptr<FloatType::MyType> &FloatHeap) -> FloatType& 
     {
         *FloatHeap += 10;
         return f; 
