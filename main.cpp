@@ -186,12 +186,6 @@ struct Numeric
         return *this;
     }
 
-    Numeric& pow(const Numeric& doubleRef)
-    {
-        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
-        return *this;
-    }
-
 private:
     MyType powInternal(MyType power)
     {
@@ -246,12 +240,6 @@ struct Numeric<double>
     Numeric& pow(MyType power)
     {
         *numericHeap = powInternal(power);
-        return *this;
-    }
-
-    Numeric& pow(const Numeric& doubleRef)
-    {
-        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
         return *this;
     }
 
