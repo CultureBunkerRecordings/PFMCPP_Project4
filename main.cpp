@@ -89,12 +89,179 @@ If you need to view an example, see: https://bitbucket.org/MatkatMusic/pfmcpptas
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include <memory>
 
 //forward declare
 
-struct FloatType;
-struct DoubleType;
-struct IntType;
+// struct FloatType;
+// struct DoubleType;
+//struct IntType;
+
+//IntType definition /////////////////////////////////////////////
+template<typename T>
+struct Numeric
+{
+    using MyType = T;
+    
+    Numeric(MyType value): numericHeap(new MyType(value)){}
+    
+    ~Numeric() = default;
+    
+    operator MyType() const 
+    {
+        return *numericHeap;
+    }
+
+    Numeric& operator+=(const MyType other)
+    {
+        *numericHeap += other;
+        return *this;
+    }
+
+    Numeric& operator-=(const MyType other)
+    {
+        *numericHeap -= other;
+        return *this;
+    }
+
+    Numeric& operator/=(const MyType other)
+    {
+        // - in plain-english, you'll need to implement logic like this:
+        // if your template type is an int
+        //         if your parameter's type is also an int
+        //                 if your parameter is 0
+        //                         don't do the division
+        //         else if it's less than epsilon
+        //                 dont do the divison
+        // else if it's less than epsilon
+        //        warn about doing the division
+        if(std::is_same<int, MyType>::value)
+        {
+            if(std::is_same<decltype(other), int>::value)
+            {
+                if(other == 0)
+                {
+                    return *this;
+                }
+            }
+            else if(std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+            {
+                return *this;
+            }
+        }
+        else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+        {
+            std::cout<<"Warning division by zero";
+        }
+        *numericHeap /= other; 
+        return *this;
+    }
+
+    Numeric& operator*=(const MyType other)
+    {
+        *numericHeap *= other;
+        return *this;
+    }
+    
+    Numeric& apply(std::function<Numeric&(std::unique_ptr<MyType>&)> numericFunc)
+    {
+        if(numericFunc)
+        {
+            return numericFunc(*numericHeap);
+        }
+        return *this;
+    }
+
+    
+    Numeric& apply(void(*numericFunc)(std::unique_ptr<MyType>&))
+    {
+        numericFunc(numericHeap);
+        return *this;
+    }
+
+    Numeric& pow(MyType power)
+    {
+        *numericHeap = powInternal(power);
+        return *this;
+    }
+
+    Numeric& pow(const Numeric& doubleRef)
+    {
+        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
+        return *this;
+    }
+
+private:
+    MyType powInternal(MyType power)
+    {
+        return static_cast<MyType>(std::pow(*numericHeap, power));
+    }
+    
+    std::unique_ptr<MyType> numericHeap = nullptr;
+}; 
+
+template<>
+struct Numeric<double>
+{
+    using MyType = double;
+    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){}
+    ~Numeric() = default;
+    
+    operator MyType() const 
+    {
+        return *numericHeap;
+    }
+
+    Numeric& operator+=(const MyType other)
+    {
+        *numericHeap += other;
+        return *this;
+    }
+
+    Numeric& operator-=(const MyType other)
+    {
+        *numericHeap -= other;
+        return *this;
+    }
+
+    Numeric& operator/=(const MyType other)
+    {
+        *numericHeap /= other;
+        return *this;
+    }
+
+    Numeric& operator*=(const MyType other)
+    {
+        *numericHeap *= other;
+        return *this;
+    }
+    template<typename X>
+    Numeric& apply(X numericFunc)
+    {
+        numericFunc(numericHeap);
+        return *this;
+    }
+
+    Numeric& pow(MyType power)
+    {
+        *numericHeap = powInternal(power);
+        return *this;
+    }
+
+    Numeric& pow(const Numeric& doubleRef)
+    {
+        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
+        return *this;
+    }
+
+private:
+    MyType powInternal(MyType power)
+    {
+        return static_cast<MyType>(std::pow(*numericHeap, power));
+    }
+    
+    std::unique_ptr<MyType> numericHeap = nullptr;
+}; 
 
 //Point definition ///////////////////////////////////////////
 
@@ -102,94 +269,12 @@ struct Point
 {
     Point(float xy) : Point(xy, xy) { }  //This calls the constructor below.
     Point(float _x, float _y) : x(_x), y(_y) { }
+    operator float() const { return x * y; }
     Point& multiply(float m);
-    Point& multiply(IntType& m);
-    Point& multiply(FloatType& m);
-    Point& multiply(DoubleType& m);
     void toString();
 private:
     float x{0}, y{0};
 };
-
-
-//IntType definition /////////////////////////////////////////////
-
-struct IntType
-{
-    IntType(int);
-    ~IntType();
-    operator int() const { return *intTypeHeap; }
-    
-    IntType& operator+=(const int other);
-    IntType& operator-=(const int other);
-    IntType& operator/=(const int other);
-    IntType& operator*=(const int other);
-
-    IntType& apply(std::function<IntType&(int&)> intFunc);
-    IntType& apply(void(*intFunc)(int&));
-
-    IntType& pow(int power);
-    IntType& pow(const IntType& intRef);
-    IntType& pow(const FloatType& floatRef);
-    IntType& pow(const DoubleType& doubleRef);
-    
-private:
-    int powInternal(int power);
-    int* intTypeHeap = nullptr;
-}; 
-
-//FloatType definition ///////////////////////////////////////////
-struct FloatType
-{
-    FloatType(float);
-    ~FloatType();
-    operator float() const { return *floatTypeHeap; }
-
-    FloatType& operator+=(const float other);
-    FloatType& operator-=(const float other);
-    FloatType& operator/=(const float other);
-    FloatType& operator*=(const float other);
-
-    FloatType& apply(std::function<FloatType&(float&)> floatFunc);
-    FloatType& apply(void(*)(float&));
-
-    FloatType& pow(float power);
-    FloatType& pow(const IntType& intRef);
-    FloatType& pow(const FloatType& floatRef);
-    FloatType& pow(const DoubleType& doubleRef);  
-    
-private:
-    float* floatTypeHeap = nullptr;
-    float powInternal(float power);
-    
-};
-
-//DoubleType definition /////////////////////////////////////////
-
-struct DoubleType 
-{
-    DoubleType(double);
-    ~DoubleType();
-    operator double() const { return *doubleTypeHeap; }
-
-    DoubleType& operator+=(const double other);
-    DoubleType& operator-=(const double other);
-    DoubleType& operator/=(const double other);
-    DoubleType& operator*=(const double other);
-
-    DoubleType& apply(std::function<DoubleType&(double&)>);
-    DoubleType& apply(void(*)(double&));
-
-    const DoubleType& pow(double power);
-    DoubleType& pow(const IntType& intRef);
-    DoubleType& pow(const FloatType& floatRef);
-    DoubleType& pow(const DoubleType& doubleRef);
-    
-private:
-    double powInternal(double power);
-    double* doubleTypeHeap = nullptr;
-};
-
 
 //Point Implementation ///////////////////////////////////////////
 
@@ -200,311 +285,26 @@ Point& Point::multiply(float m)
     return *this;
 }
 
-
-Point& Point::multiply(IntType& m)
-{
-    return multiply(static_cast<float>(m));
-}
-
-Point& Point::multiply(FloatType& m)
-{
-    return multiply(static_cast<float>(m));
-}
-
-Point& Point::multiply(DoubleType& m)
-{
-    return multiply(static_cast<float>(m));
-}
-
 void Point::toString()
 {
     std::cout << "x: " << x << std::endl;
     std::cout << "y: " << y << std::endl;
 }
 
-//IntType Implementation /////////////////////////////////////////
-
-
-IntType::IntType(int intValue)
-{
-    intTypeHeap = new int(intValue);
-}
-
-IntType::~IntType()
-{
-    delete intTypeHeap;
-}
-
-IntType& IntType::operator+=( const int other) 
-{
-    *intTypeHeap += other;
-    return *this;
-}
-
-IntType& IntType::operator-=(const int other)
-{
-    *intTypeHeap -= other;
-    return *this;
-}
-
-IntType& IntType::operator/=( const int other) 
-{
-    if (other == 0)
-    {
-        std::cout << "error divide by zero" << std::endl; 
-    } 
-    else 
-    { 
-        *intTypeHeap /= other;
-    }
-    return *this;
-}
-
-IntType& IntType::operator*=(const int other) 
-{
-    *intTypeHeap *= other;
-    return *this;
-}
-
-IntType& IntType::apply(std::function<IntType&(int&)> intFunc)
-{
-    if(intFunc)
-    {
-        return intFunc(*intTypeHeap);
-    }
-    return *this;
-}
-
-IntType& IntType::apply(void(*intFunc)(int&))
-{
-    if(intFunc)
-    {
-        intFunc(*intTypeHeap);
-    }
-    return *this;
-}
-
-IntType& IntType::pow(int power)
-{
-    *intTypeHeap = powInternal(power);
-    return *this;
-}
-
-IntType& IntType::pow(const IntType& intRef)
-{
-    *intTypeHeap = powInternal(intRef);
-    return *this;   
-}
-
-IntType& IntType::pow(const DoubleType& doubleRef)
-{
-    *intTypeHeap = powInternal(static_cast<int>(doubleRef));
-    return *this;
-}
-
-int IntType::powInternal(int power)
-{
-    return static_cast<int>(std::pow(*intTypeHeap, power));
-}
-
-IntType& IntType::pow(const FloatType& floatRef)
-{
-    *intTypeHeap = (powInternal(static_cast<int>(floatRef)));
-    return *this;
-}
-
-//FloatType Implementation //////////////////////////////////////
-
-
-FloatType::FloatType(float floatValue)
-{
-    floatTypeHeap = new float(floatValue);
-}
-
-FloatType::~FloatType()
-{
-    delete floatTypeHeap;
-}
-
-FloatType& FloatType::operator+=( const float other) 
-{
-    *floatTypeHeap += other;
-    return *this;
-}
-
-FloatType& FloatType::operator-=(const float other)
-{
-    *floatTypeHeap -= other;
-    return *this;
-}
-
-FloatType& FloatType::operator/=( const float other) 
-{
-    *floatTypeHeap /= other;
-    return *this;
-}
-
-FloatType& FloatType::operator*=(const float other) 
-{
-    *floatTypeHeap *= other;
-    return *this;
-}
-
-FloatType& FloatType::apply(std::function<FloatType&(float&)> floatFunc)
-{
-    if(floatFunc)
-    {
-        return floatFunc(*floatTypeHeap);
-    }
-    return *this;
-}
-
-FloatType& FloatType::apply(void(*floatFunc)(float&))
-{
-    if(floatFunc)
-    {
-        floatFunc(*floatTypeHeap);
-    }
-    return *this;
-}
-
-FloatType& FloatType::pow(float power)
-{
-    powInternal(power);
-    return *this;
-}
-
-FloatType& FloatType::pow(const IntType& intRef)
-{ 
-    powInternal(intRef);
-    return *this; 
-}
-
-FloatType& FloatType::pow(const FloatType& floatRef)
-{
-    powInternal(floatRef);
-    return *this; 
-}
-
-FloatType& FloatType::pow(const DoubleType& doubleRef)
-{
-    *floatTypeHeap = powInternal(static_cast<float>(doubleRef)); 
-    return *this; 
-}
-
-float FloatType::powInternal(float power)
-{
-    return std::pow(*floatTypeHeap, power);
-}
-
-//DoubleType Implementation //////////////////////////////////////
-
-
-DoubleType::DoubleType(double doubleValue)
-{
-    doubleTypeHeap = new double(doubleValue);
-}
-
-DoubleType::~DoubleType()
-{
-    delete doubleTypeHeap;
-}
-
-DoubleType& DoubleType::operator+=( const double other) 
-{
-    *doubleTypeHeap += other;
-    return *this;
-}
-
-DoubleType& DoubleType::operator-=(const double other)
-{
-    *doubleTypeHeap -= other;
-    return *this;
-}
-
-DoubleType& DoubleType::operator/=( const double other) 
-{
-    *doubleTypeHeap /= other;
-    return *this;
-}
-
-DoubleType& DoubleType::operator*=(const double other) 
-{
-    *doubleTypeHeap *= other;
-    return *this;
-}
-
-DoubleType& DoubleType::apply(std::function<DoubleType&(double&)> doubleFunc)
-{
-    if(doubleFunc)
-    {
-        return doubleFunc(*doubleTypeHeap);
-    }
-    return *this;
-}
-
-DoubleType& DoubleType::apply(void(*doubleFunc)(double&))
-{
-    if(doubleFunc)
-    {
-        doubleFunc(*doubleTypeHeap);
-    }
-    return *this;
-}
-
-const DoubleType& DoubleType::pow(double power)
-{
-    *doubleTypeHeap = powInternal(power);
-    return *this;
-}
-
-DoubleType& DoubleType::pow(const IntType& intRef)
-{
-    *doubleTypeHeap = powInternal(intRef);
-    return *this;
-}
-
-DoubleType& DoubleType::pow(const FloatType& floatRef)
-{
-    *doubleTypeHeap = powInternal(static_cast <double>(floatRef));
-    return *this;
-}
-
-DoubleType& DoubleType::pow(const DoubleType& doubleRef)
-{
-    *doubleTypeHeap = powInternal(doubleRef);
-    return *this;
-}
-
-double DoubleType::powInternal(double power)
-{
-    return static_cast<double>(std::pow(*doubleTypeHeap, power)); 
-}
-
 //Free funcs ///////////////////////////////////////////
-
-void plusTen(int& intHeap)
+template <typename T>
+void plusTen(std::unique_ptr<T>& heap)
 {
-    intHeap += 10;
-}
-
-void plusTen(float& floatHeap)
-{
-    floatHeap += 10.0f;
-}
-
-void plusTen(double& doubleHeap)
-{
-    doubleHeap += 10.0;
+    *heap += 10;
 }
 
 //MAIN ///////////////////////////////////////////
 
 int main()
 {
-    FloatType f(2.0f);
-    DoubleType d(2.0);
-    IntType i(2);
+    Numeric<float> f(2.0f);
+    Numeric<double> d(2.0);
+    Numeric<int> i(2);
 
     std::cout << "i = " << i << std::endl;
     std::cout << "f = " << f << std::endl;
@@ -514,9 +314,9 @@ int main()
 
     f.pow(i) /= 4.6f;
 
-    d.pow(f) *= 4.4567;
+    d.pow(static_cast<double>(f)) *= 4.4567;
 
-    i.pow(d) += 10; 
+    i.pow(static_cast<int>(d)) += 10; 
 
     i /= 0;
 
@@ -526,17 +326,21 @@ int main()
 
     std::cout << "f by the power of  i and dividing by 4.6.. f: " << f << std::endl;
 
-    std::cout << "d times 4.4567 to the power of f.. d:  "<< d << std::endl;
+    std::cout << "d to the power of f times 4.4567.. d:  "<< d << std::endl;
 
-    std::cout << "Adding 10 to i to the power of d.. i: " << i << std::endl;
+    std::cout << "i to the power of d plus 10.. i: " << i << std::endl;
 
     i.apply(plusTen);
 
     std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
 
-    i.apply([&i](int& intHeap) -> IntType& 
+    using IntType = decltype(i);
+    using FloatType = decltype(f);
+    using DoubleType = decltype(d);
+
+    i.apply([&i](std::unique_ptr<IntType::MyType> &IntHeap) -> IntType& 
     { 
-        intHeap += 10;
+        *IntHeap += 10;
         return i; 
     });
 
@@ -546,21 +350,17 @@ int main()
 
     std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
 
-    f.apply([&f](float& floatHeap) -> FloatType& 
+    f.apply([&f](std::unique_ptr<FloatType::MyType> &FloatHeap) -> FloatType& 
     {
-        floatHeap += 10;
+        *FloatHeap += 10;
         return f; 
     });
 
     std::cout << "Plus 10 to f using a lambda = " << f << std::endl;
 
-    d.apply(plusTen);
-
-    std::cout << "Plus 10 to d using a function pointer = " << d << std::endl;
-
-    d.apply([&d](double& doubleHeap) -> DoubleType& 
+    d.apply([&d](std::unique_ptr<DoubleType::MyType>& doubleHeap) -> DoubleType& 
     {
-        doubleHeap += 10.0; 
+        *doubleHeap += 10.0; 
         return d; 
     });
 
