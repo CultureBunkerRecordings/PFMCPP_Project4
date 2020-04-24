@@ -135,16 +135,16 @@ struct Numeric
         //                 dont do the divison
         // else if it's less than epsilon
         //        warn about doing the division
-        if(std::is_same<int, MyType>::value)
+        if constexpr(std::is_same<int, MyType>::value)
         {
-            if(std::is_same<decltype(other), int>::value)
+            if constexpr(std::is_same<decltype(other), int>::value)
             {
-                if(other == 0)
+                if (other == 0)
                 {
                     return *this;
                 }
             }
-            else if(std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+            else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
             {
                 return *this;
             }
@@ -167,7 +167,7 @@ struct Numeric
     {
         if(numericFunc)
         {
-            return numericFunc(*numericHeap);
+            return numericFunc(numericHeap);
         }
         return *this;
     }
@@ -175,6 +175,7 @@ struct Numeric
     
     Numeric& apply(void(*numericFunc)(std::unique_ptr<MyType>&))
     {
+        if (numericFunc != nullptr)
         numericFunc(numericHeap);
         return *this;
     }
@@ -182,12 +183,6 @@ struct Numeric
     Numeric& pow(MyType power)
     {
         *numericHeap = powInternal(power);
-        return *this;
-    }
-
-    Numeric& pow(const Numeric& doubleRef)
-    {
-        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
         return *this;
     }
 
@@ -245,12 +240,6 @@ struct Numeric<double>
     Numeric& pow(MyType power)
     {
         *numericHeap = powInternal(power);
-        return *this;
-    }
-
-    Numeric& pow(const Numeric& doubleRef)
-    {
-        *numericHeap = (powInternal(static_cast<MyType>(doubleRef)));
         return *this;
     }
 
@@ -338,9 +327,9 @@ int main()
     using FloatType = decltype(f);
     using DoubleType = decltype(d);
 
-    i.apply([&i](std::unique_ptr<IntType::MyType> &IntHeap) -> IntType& 
+    i.apply([&i](std::unique_ptr<IntType::MyType> &intHeap) -> IntType& 
     { 
-        *IntHeap += 10;
+        *intHeap += 10;
         return i; 
     });
 
@@ -350,9 +339,9 @@ int main()
 
     std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
 
-    f.apply([&f](std::unique_ptr<FloatType::MyType> &FloatHeap) -> FloatType& 
+    f.apply([&f](std::unique_ptr<FloatType::MyType> &floatHeap) -> FloatType& 
     {
-        *FloatHeap += 10;
+        *floatHeap += 10;
         return f; 
     });
 
