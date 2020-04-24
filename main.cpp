@@ -323,11 +323,11 @@ int main()
 
     std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
 
-    using IntType = decltype(i);
-    using FloatType = decltype(f);
-    using DoubleType = decltype(d);
+    using intType = decltype(i);
+    using floatType = decltype(f);
+    using doubleType = decltype(d);
 
-    i.apply([&i](std::unique_ptr<IntType::MyType> &IntHeap) -> IntType& 
+    i.apply([&i](std::unique_ptr<intType::MyType> &IntHeap) -> intType& 
     { 
         *IntHeap += 10;
         return i; 
@@ -339,7 +339,7 @@ int main()
 
     std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
 
-    f.apply([&f](std::unique_ptr<FloatType::MyType> &FloatHeap) -> FloatType& 
+    f.apply([&f](std::unique_ptr<floatType::MyType> &FloatHeap) -> floatType& 
     {
         *FloatHeap += 10;
         return f; 
@@ -347,7 +347,7 @@ int main()
 
     std::cout << "Plus 10 to f using a lambda = " << f << std::endl;
 
-    d.apply([&d](std::unique_ptr<DoubleType::MyType>& doubleHeap) -> DoubleType& 
+    d.apply([&d](std::unique_ptr<doubleType::MyType>& doubleHeap) -> doubleType& 
     {
         *doubleHeap += 10.0; 
         return d; 
