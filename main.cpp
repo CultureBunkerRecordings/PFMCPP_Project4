@@ -25,9 +25,12 @@ Create a branch named Part8
   
  1) Here is a starting point for how to implement your Temporary struct.
  */
-
-#include <typeinfo>
+#include <cmath>
 #include <iostream>
+#include <functional>
+#include <memory>
+#include <typeinfo>
+
 template<typename NumericType>
 struct Temporary
 {
@@ -137,26 +140,24 @@ send me a DM to check your pull request
 */
 
 //#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
-#include <cmath>
-#include <functional>
-#include <memory>
+
 
 template<typename T>
 struct Numeric
 {
-    using MyType = T;
+    using MyType = Temporary<T>;
     
-    Numeric(MyType value): numericHeap(new MyType(value)){}
+    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){}
     
     ~Numeric() = default;
 
-    operator MyType() const  
+    operator T() const  
     {
         return *numericHeap;
     }
 
 
-    operator MyType&()  
+    operator T&()  
     {
         return *numericHeap;
     }
@@ -164,21 +165,21 @@ struct Numeric
     template<typename OtherType>
     Numeric& operator=(const OtherType& other)
     {
-        *numericHeap = static_cast<MyType>(other);
+        *numericHeap = static_cast<T>(other);
         return *this;
     }
 
     template<typename OtherType>
     Numeric& operator+=(const OtherType& other)
     {
-        *numericHeap += static_cast<MyType>(other);
+        *numericHeap += static_cast<T>(other);
         return *this;
     }
 
     template<typename OtherType>
     Numeric& operator-=(const OtherType& other)
     {
-        *numericHeap -= static_cast<MyType>(other);
+        *numericHeap -= static_cast<T>(other);
         return *this;
     }
 
@@ -194,7 +195,7 @@ struct Numeric
         //                 dont do the divison
         // else if it's less than epsilon
         //        warn about doing the division
-        if constexpr(std::is_same<int, MyType>::value)
+        if constexpr(std::is_same<int, T>::value)
         {
             if constexpr(std::is_same<decltype(other), int>::value)
             {
@@ -203,23 +204,23 @@ struct Numeric
                     return *this;
                 }
             }
-            else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+            else if (std::abs(other)<= std::numeric_limits<OtherType>::epsilon())
             {
                 return *this;
             }
         }
-        else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
+        else if (std::abs(other)<= std::numeric_limits<OtherType>::epsilon())
         {
             std::cout<<"Warning division by zero";
         }
-        *numericHeap /= static_cast<MyType>(other); 
+        *numericHeap /= static_cast<T>(other); 
         return *this;
     }
 
     template<typename OtherType>
     Numeric& operator*=(const OtherType& other)
     {
-        *numericHeap *= static_cast<MyType>(other);
+        *numericHeap *= static_cast<T>(other);
         return *this;
     }
     
@@ -232,7 +233,7 @@ struct Numeric
     template<typename OtherType>
     Numeric& pow(const OtherType& power)
     {
-        *numericHeap = std::pow(*numericHeap, static_cast<MyType>(power));
+        *numericHeap = std::pow(*numericHeap, static_cast<T>(power));
         return *this;
     }
 
@@ -248,18 +249,21 @@ struct Point
     Point(float xy) : Point(xy, xy) { }  //This calls the constructor below.
     Point(float _x, float _y) : x(_x), y(_y) { }
     operator float() const { return x * y; }
-    Point& multiply(float m);
+
+    template <typename T>
+    Point& multiply(const T& m);
+
     void toString();
 private:
     float x{0}, y{0};
 };
 
 //Point Implementation ///////////////////////////////////////////
-
-Point& Point::multiply(float m)
+template <typename T>
+Point& Point::multiply(const T& m)
 {
-    x *= m;
-    y *= m;
+    x *= static_cast<float>(m);
+    y *= static_cast<float>(m);
     return *this;
 }
 
@@ -273,7 +277,7 @@ void Point::toString()
 template <typename T>
 void cube(std::unique_ptr<T>& heap)
 {
-    *heap += 10;
+    *heap = *heap * *heap * *heap;
 }
 
 //MAIN ///////////////////////////////////////////
