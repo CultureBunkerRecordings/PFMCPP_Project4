@@ -25,8 +25,12 @@ Create a branch named Part8
   
  1) Here is a starting point for how to implement your Temporary struct.
  */
-
+#include <cmath>
+#include <iostream>
+#include <functional>
+#include <memory>
 #include <typeinfo>
+
 template<typename NumericType>
 struct Temporary
 {
@@ -39,8 +43,8 @@ struct Temporary
      revise these conversion functions to read/write to 'v' here
      hint: what qualifier do read-only functions usually have?
      */
-    operator ___() { /* read-only function */ }
-    operator ___() { /* read/write function */ }
+    operator NumericType() const { return v;/* read-only function */ }
+    operator NumericType&() { return v;/* read/write function */ }
 private:
     static int counter;
     NumericType v;
@@ -50,26 +54,26 @@ private:
  2) add the definition of Temporary::counter here, which is a static variable and must be defined outside of the class.
     Remember the rules about how to define a Template member variable/function outside of the class.
 */
-
+template<typename NumericType> int Temporary<NumericType>::counter = 0;
 /*
  3) You'll need to template your overloaded math operator functions in your Templated Class from Ch5 p04
     use static_cast to convert whatever type is passed in to your template's NumericType before performing the +=, -=, etc.  here's an example implementation:
  */
-namespace example
-{
-template<typename NumericType>
-struct Numeric
-{
-    //snip
-    template<typename OtherType>
-    Numeric& operator-=(const OtherType& o) 
-    { 
-        *value -= static_cast<NumericType>(o); 
-        return *this; 
-    }
-    //snip
-};
-}
+// namespace example
+// {
+// template<typename NumericType>
+// struct Numeric
+// {
+//     //snip
+//     template<typename OtherType>
+//     Numeric& operator-=(const OtherType& o) 
+//     { 
+//         *value -= static_cast<NumericType>(o); 
+//         return *this; 
+//     }
+//     //snip
+// };
+// }
 
 /*
  4) remove your specialized <double> template of your Numeric<T> class from the previous task (ch5 p04)
@@ -135,7 +139,149 @@ send me a DM to check your pull request
  Wait for my code review.
 */
 
-#include <iostream>
+//#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
+
+
+template<typename T>
+struct Numeric
+{
+    using MyType = Temporary<T>;
+    
+    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){}
+    
+    ~Numeric() = default;
+
+    operator T() const  
+    {
+        return *numericHeap;
+    }
+
+
+    operator T&()  
+    {
+        return *numericHeap;
+    }
+
+    template<typename OtherType>
+    Numeric& operator=(const OtherType& other)
+    {
+        *numericHeap = static_cast<T>(other);
+        return *this;
+    }
+
+    template<typename OtherType>
+    Numeric& operator+=(const OtherType& other)
+    {
+        *numericHeap += static_cast<T>(other);
+        return *this;
+    }
+
+    template<typename OtherType>
+    Numeric& operator-=(const OtherType& other)
+    {
+        *numericHeap -= static_cast<T>(other);
+        return *this;
+    }
+
+    template<typename OtherType>
+    Numeric& operator/=(const OtherType& other)
+    {
+        // - in plain-english, you'll need to implement logic like this:
+        // if your template type is an int
+        //         if your parameter's type is also an int
+        //                 if your parameter is 0
+        //                         don't do the division
+        //         else if it's less than epsilon
+        //                 dont do the divison
+        // else if it's less than epsilon
+        //        warn about doing the division
+        if constexpr(std::is_same<int, T>::value)
+        {
+            if constexpr(std::is_same<decltype(other), int>::value)
+            {
+                if (other == 0)
+                {
+                    return *this;
+                }
+            }
+            else if (std::abs(other)<= std::numeric_limits<OtherType>::epsilon())
+            {
+                return *this;
+            }
+        }
+        else if (std::abs(other)<= std::numeric_limits<OtherType>::epsilon())
+        {
+            std::cout<<"Warning division by zero";
+        }
+        *numericHeap /= static_cast<T>(other); 
+        return *this;
+    }
+
+    template<typename OtherType>
+    Numeric& operator*=(const OtherType& other)
+    {
+        *numericHeap *= static_cast<T>(other);
+        return *this;
+    }
+    
+    template<typename X>
+    Numeric& apply(X numericFunc)
+    {
+        numericFunc(numericHeap);
+        return *this;
+    }
+    template<typename OtherType>
+    Numeric& pow(const OtherType& power)
+    {
+        *numericHeap = std::pow(*numericHeap, static_cast<T>(power));
+        return *this;
+    }
+
+private:
+    std::unique_ptr<MyType> numericHeap;
+}; 
+
+
+//Point definition ///////////////////////////////////////////
+
+struct Point
+{
+    Point(float xy) : Point(xy, xy) { }  //This calls the constructor below.
+    Point(float _x, float _y) : x(_x), y(_y) { }
+    operator float() const { return x * y; }
+
+    template <typename T>
+    Point& multiply(const T& m);
+
+    void toString();
+private:
+    float x{0}, y{0};
+};
+
+//Point Implementation ///////////////////////////////////////////
+template <typename T>
+Point& Point::multiply(const T& m)
+{
+    x *= static_cast<float>(m);
+    y *= static_cast<float>(m);
+    return *this;
+}
+
+void Point::toString()
+{
+    std::cout << "x: " << x << std::endl;
+    std::cout << "y: " << y << std::endl;
+}
+
+//Free funcs ///////////////////////////////////////////
+template <typename T>
+void cube(std::unique_ptr<T>& heap)
+{
+    *heap = *heap * *heap * *heap;
+}
+
+//MAIN ///////////////////////////////////////////
+
 int main()
 {
     Numeric<float> f(0.1f);
@@ -175,7 +321,7 @@ int main()
     std::cout << "intNum: " << intNum << std::endl;
     
     {
-        using Type = decltype(f)::Type;
+        using Type = decltype(f)::MyType;
         f.apply([&f](std::unique_ptr<Type>&value) -> decltype(f)&
                 {
                     auto& v = *value;
@@ -189,7 +335,7 @@ int main()
     }
     
     {
-        using Type = decltype(d)::Type;
+        using Type = decltype(d)::MyType;
         d.apply([&d](std::unique_ptr<Type>&value) -> decltype(d)&
                 {
                     auto& v = *value;
@@ -203,7 +349,7 @@ int main()
     }
     
     {
-        using Type = decltype(i)::Type;
+        using Type = decltype(i)::MyType;
         i.apply([&i](std::unique_ptr<Type>&value) -> decltype(i)&
                 {
                     auto& v = *value;
@@ -214,282 +360,5 @@ int main()
         
         i.apply( cube<Type> );
         std::cout << "i cubed: " << i << std::endl;
-    }
-}
-
-
-
-
-
-//#TODO: remove -Wno-deprecated flag after learning rule of 3-5-0 in part7/8/9
-#include <iostream>
-#include <cmath>
-#include <functional>
-#include <memory>
-
-//forward declare
-
-// struct FloatType;
-// struct DoubleType;
-//struct IntType;
-
-//IntType definition /////////////////////////////////////////////
-template<typename T>
-struct Numeric
-{
-    using MyType = T;
-    
-    Numeric(MyType value): numericHeap(new MyType(value)){}
-    
-    ~Numeric() = default;
-    
-    operator MyType() const 
-    {
-        return *numericHeap;
-    }
-
-    Numeric& operator+=(const MyType other)
-    {
-        *numericHeap += other;
-        return *this;
-    }
-
-    Numeric& operator-=(const MyType other)
-    {
-        *numericHeap -= other;
-        return *this;
-    }
-
-    Numeric& operator/=(const MyType other)
-    {
-        // - in plain-english, you'll need to implement logic like this:
-        // if your template type is an int
-        //         if your parameter's type is also an int
-        //                 if your parameter is 0
-        //                         don't do the division
-        //         else if it's less than epsilon
-        //                 dont do the divison
-        // else if it's less than epsilon
-        //        warn about doing the division
-        if constexpr(std::is_same<int, MyType>::value)
-        {
-            if constexpr(std::is_same<decltype(other), int>::value)
-            {
-                if (other == 0)
-                {
-                    return *this;
-                }
-            }
-            else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
-            {
-                return *this;
-            }
-        }
-        else if (std::abs(other)<= std::numeric_limits<MyType>::epsilon())
-        {
-            std::cout<<"Warning division by zero";
-        }
-        *numericHeap /= other; 
-        return *this;
-    }
-
-    Numeric& operator*=(const MyType other)
-    {
-        *numericHeap *= other;
-        return *this;
-    }
-    
-    Numeric& apply(std::function<Numeric&(std::unique_ptr<MyType>&)> numericFunc)
-    {
-        if(numericFunc)
-        {
-            return numericFunc(numericHeap);
-        }
-        return *this;
-    }
-
-    
-    Numeric& apply(void(*numericFunc)(std::unique_ptr<MyType>&))
-    {
-        if (numericFunc != nullptr)
-        numericFunc(numericHeap);
-        return *this;
-    }
-
-    Numeric& pow(MyType power)
-    {
-        *numericHeap = powInternal(power);
-        return *this;
-    }
-
-private:
-    MyType powInternal(MyType power)
-    {
-        return static_cast<MyType>(std::pow(*numericHeap, power));
-    }
-    
-    std::unique_ptr<MyType> numericHeap = nullptr;
-}; 
-
-template<>
-struct Numeric<double>
-{
-    using MyType = double;
-    Numeric(MyType value): numericHeap(std::make_unique<MyType>(value)){}
-    ~Numeric() = default;
-    
-    operator MyType() const 
-    {
-        return *numericHeap;
-    }
-
-    Numeric& operator+=(const MyType other)
-    {
-        *numericHeap += other;
-        return *this;
-    }
-
-    Numeric& operator-=(const MyType other)
-    {
-        *numericHeap -= other;
-        return *this;
-    }
-
-    Numeric& operator/=(const MyType other)
-    {
-        *numericHeap /= other;
-        return *this;
-    }
-
-    Numeric& operator*=(const MyType other)
-    {
-        *numericHeap *= other;
-        return *this;
-    }
-    template<typename X>
-    Numeric& apply(X numericFunc)
-    {
-        numericFunc(numericHeap);
-        return *this;
-    }
-
-    Numeric& pow(MyType power)
-    {
-        *numericHeap = powInternal(power);
-        return *this;
-    }
-
-private:
-    MyType powInternal(MyType power)
-    {
-        return static_cast<MyType>(std::pow(*numericHeap, power));
-    }
-    
-    std::unique_ptr<MyType> numericHeap = nullptr;
-}; 
-
-//Point definition ///////////////////////////////////////////
-
-struct Point
-{
-    Point(float xy) : Point(xy, xy) { }  //This calls the constructor below.
-    Point(float _x, float _y) : x(_x), y(_y) { }
-    operator float() const { return x * y; }
-    Point& multiply(float m);
-    void toString();
-private:
-    float x{0}, y{0};
-};
-
-//Point Implementation ///////////////////////////////////////////
-
-Point& Point::multiply(float m)
-{
-    x *= m;
-    y *= m;
-    return *this;
-}
-
-void Point::toString()
-{
-    std::cout << "x: " << x << std::endl;
-    std::cout << "y: " << y << std::endl;
-}
-
-//Free funcs ///////////////////////////////////////////
-template <typename T>
-void plusTen(std::unique_ptr<T>& heap)
-{
-    *heap += 10;
-}
-
-//MAIN ///////////////////////////////////////////
-
-int main()
-{
-    Numeric<float> f(2.0f);
-    Numeric<double> d(2.0);
-    Numeric<int> i(2);
-
-    std::cout << "i = " << i << std::endl;
-    std::cout << "f = " << f << std::endl;
-    std::cout << "d = " << d << std::endl;
-
-    Point p(f);
-
-    f.pow(i) /= 4.6f;
-
-    d.pow(static_cast<double>(f)) *= 4.4567;
-
-    i.pow(static_cast<int>(d)) += 10; 
-
-    i /= 0;
-
-    p.multiply(i).toString();
-
-    p.multiply(f).toString();
-
-    std::cout << "f by the power of  i and dividing by 4.6.. f: " << f << std::endl;
-
-    std::cout << "d to the power of f times 4.4567.. d:  "<< d << std::endl;
-
-    std::cout << "i to the power of d plus 10.. i: " << i << std::endl;
-
-    i.apply(plusTen);
-
-    std::cout << "Plus 10 to i using a function pointer = " << i << std::endl;
-
-    using IntType = decltype(i);
-    using FloatType = decltype(f);
-    using DoubleType = decltype(d);
-
-    i.apply([&i](std::unique_ptr<IntType::MyType> &intHeap) -> IntType& 
-    { 
-        *intHeap += 10;
-        return i; 
-    });
-
-    std::cout << "Plus 10 to i using a lambda = " << i << std::endl;
-
-    f.apply(plusTen);
-
-    std::cout << "Plus 10 to f using a function pointer = " << f << std::endl;
-
-    f.apply([&f](std::unique_ptr<FloatType::MyType> &floatHeap) -> FloatType& 
-    {
-        *floatHeap += 10;
-        return f; 
-    });
-
-    std::cout << "Plus 10 to f using a lambda = " << f << std::endl;
-
-    d.apply([&d](std::unique_ptr<DoubleType::MyType>& doubleHeap) -> DoubleType& 
-    {
-        *doubleHeap += 10.0; 
-        return d; 
-    });
-
-    std::cout << "Plus 10 to d using a lambda = " << d << std::endl;
-
-    std::cout << "good to go!" << std::endl;
+     }
 }
